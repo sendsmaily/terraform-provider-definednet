@@ -1,0 +1,37 @@
+{
+  "[json]": {
+    "editor.indentSize": 2
+  },
+  "[jsonc]": {
+    "editor.indentSize": 2
+  },
+  "[terraform]": {
+    "editor.tabSize": 2,
+    "editor.defaultFormatter": "hashicorp.terraform",
+    "editor.formatOnSave": false,
+    "editor.codeActionsOnSave": {
+      "source.formatAll.terraform": "always"
+    }
+  },
+  "[terraform-vars]": {
+    "editor.tabSize": 2,
+    "editor.defaultFormatter": "hashicorp.terraform",
+    "editor.formatOnSave": false,
+    "editor.codeActionsOnSave": {
+      "source.formatAll.terraform": "always"
+    }
+  },
+  "[terraform-test]": {
+    "editor.tabSize": 2,
+    "editor.defaultFormatter": "hashicorp.terraform",
+    "editor.formatOnSave": false,
+    "editor.codeActionsOnSave": {
+      "source.formatAll.terraform": "always"
+    }
+  },
+  "editor.formatOnSave": true,
+  "go.lintTool": "golangci-lint",
+  "go.lintFlags": [
+    "--fast"
+  ]
+}
