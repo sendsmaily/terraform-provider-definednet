@@ -2,6 +2,7 @@ package provider
 
 import (
 	"context"
+	_ "embed"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
@@ -15,6 +16,9 @@ const (
 	// DefinednetApiEndpoint declares the default Defined.net HTTP API endpoint.
 	DefinednetAPIEndpoint = "https://api.defined.net/"
 )
+
+//go:embed provider.md
+var providerDescription string
 
 // New creates a Defined.net Terraform provider.
 func New(version string) func() provider.Provider {
@@ -46,6 +50,8 @@ func (p *Provider) Metadata(ctx context.Context, req provider.MetadataRequest, r
 // Schema returns the provider's configuration schema.
 func (p *Provider) Schema(ctx context.Context, req provider.SchemaRequest, resp *provider.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		Description:         "Interact with Defined.net's managed Nebula control plane.",
+		MarkdownDescription: providerDescription,
 		Attributes: map[string]schema.Attribute{
 			"token": schema.StringAttribute{
 				Description: "Defined.net HTTP API token",
