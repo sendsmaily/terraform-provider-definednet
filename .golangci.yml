@@ -7,13 +7,15 @@ issues:
 linters:
   disable-all: true
   enable:
+    - copyloopvar
     - durationcheck
     - errcheck
-    - exportloopref
     - forcetypeassert
     - godot
     - gofmt
+    - goimports
     - gosimple
+    - govet
     - ineffassign
     - makezero
     - misspell
@@ -24,4 +26,3 @@ linters:
     - unconvert
     - unparam
     - unused
-    - govet
