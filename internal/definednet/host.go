@@ -7,12 +7,12 @@ import (
 
 // CreateHost creates a Defined.net host.
 func CreateHost(ctx context.Context, client Client, req CreateHostRequest) (*CreateHostResponse, error) {
-	var resp CreateHostResponse
+	var resp Response[CreateHostResponse]
 	if err := client.Do(ctx, http.MethodPost, []string{"v1", "hosts"}, req, &resp); err != nil {
 		return nil, err
 	}
 
-	return &resp, nil
+	return &resp.Data, nil
 }
 
 type (
@@ -31,18 +31,16 @@ type (
 
 	// CreateHostResponse is a response data model for CreateHost endpoint.
 	CreateHostResponse struct {
-		Data struct {
-			ID              string   `json:"id"`
-			NetworkID       string   `json:"networkID"`
-			RoleID          string   `json:"roleID"`
-			Name            string   `json:"name"`
-			IPAddress       string   `json:"ipAddress"`
-			StaticAddresses []string `json:"staticAddresses"`
-			ListenPort      int      `json:"listenPort"`
-			IsLighthouse    bool     `json:"isLighthouse"`
-			IsRelay         bool     `json:"isRelay"`
-			Tags            []string `json:"tags"`
-		} `json:"data"`
+		ID              string   `json:"id"`
+		NetworkID       string   `json:"networkID"`
+		RoleID          string   `json:"roleID"`
+		Name            string   `json:"name"`
+		IPAddress       string   `json:"ipAddress"`
+		StaticAddresses []string `json:"staticAddresses"`
+		ListenPort      int      `json:"listenPort"`
+		IsLighthouse    bool     `json:"isLighthouse"`
+		IsRelay         bool     `json:"isRelay"`
+		Tags            []string `json:"tags"`
 	}
 )
 
@@ -60,12 +58,12 @@ type (
 
 // GetHost retrieves a Defined.net host.
 func GetHost(ctx context.Context, client Client, req GetHostRequest) (*GetHostResponse, error) {
-	var resp GetHostResponse
+	var resp Response[GetHostResponse]
 	if err := client.Do(ctx, http.MethodGet, []string{"v1", "hosts", req.ID}, nil, &resp); err != nil {
 		return nil, err
 	}
 
-	return &resp, nil
+	return &resp.Data, nil
 }
 
 type (
@@ -76,29 +74,27 @@ type (
 
 	// GetHostResponse is a response data model for GetHost endpoint.
 	GetHostResponse struct {
-		Data struct {
-			ID              string   `json:"id"`
-			NetworkID       string   `json:"networkID"`
-			RoleID          string   `json:"roleID"`
-			Name            string   `json:"name"`
-			IPAddress       string   `json:"ipAddress"`
-			StaticAddresses []string `json:"staticAddresses"`
-			ListenPort      int      `json:"listenPort"`
-			IsLighthouse    bool     `json:"isLighthouse"`
-			IsRelay         bool     `json:"isRelay"`
-			Tags            []string `json:"tags"`
-		} `json:"data"`
+		ID              string   `json:"id"`
+		NetworkID       string   `json:"networkID"`
+		RoleID          string   `json:"roleID"`
+		Name            string   `json:"name"`
+		IPAddress       string   `json:"ipAddress"`
+		StaticAddresses []string `json:"staticAddresses"`
+		ListenPort      int      `json:"listenPort"`
+		IsLighthouse    bool     `json:"isLighthouse"`
+		IsRelay         bool     `json:"isRelay"`
+		Tags            []string `json:"tags"`
 	}
 )
 
 // UpdateHost updates a Defined.net host.
 func UpdateHost(ctx context.Context, client Client, req UpdateHostRequest) (*UpdateHostResponse, error) {
-	var resp UpdateHostResponse
+	var resp Response[UpdateHostResponse]
 	if err := client.Do(ctx, http.MethodPut, []string{"v1", "hosts", req.ID}, req, &resp); err != nil {
 		return nil, err
 	}
 
-	return &resp, nil
+	return &resp.Data, nil
 }
 
 type (
@@ -114,17 +110,15 @@ type (
 
 	// UpdateHostResponse is a response data model for UpdateHost endpoint.
 	UpdateHostResponse struct {
-		Data struct {
-			ID              string   `json:"id"`
-			NetworkID       string   `json:"networkID"`
-			RoleID          string   `json:"roleID"`
-			Name            string   `json:"name"`
-			IPAddress       string   `json:"ipAddress"`
-			StaticAddresses []string `json:"staticAddresses"`
-			ListenPort      int      `json:"listenPort"`
-			IsLighthouse    bool     `json:"isLighthouse"`
-			IsRelay         bool     `json:"isRelay"`
-			Tags            []string `json:"tags"`
-		} `json:"data"`
+		ID              string   `json:"id"`
+		NetworkID       string   `json:"networkID"`
+		RoleID          string   `json:"roleID"`
+		Name            string   `json:"name"`
+		IPAddress       string   `json:"ipAddress"`
+		StaticAddresses []string `json:"staticAddresses"`
+		ListenPort      int      `json:"listenPort"`
+		IsLighthouse    bool     `json:"isLighthouse"`
+		IsRelay         bool     `json:"isRelay"`
+		Tags            []string `json:"tags"`
 	}
 )

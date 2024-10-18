@@ -7,12 +7,12 @@ import (
 
 // CreateEnrollmentCode creates a Defined.net host enrollment code.
 func CreateEnrollmentCode(ctx context.Context, client Client, req CreateEnrollmentCodeRequest) (*CreateEnrollmentCodeResponse, error) {
-	var resp CreateEnrollmentCodeResponse
+	var resp Response[CreateEnrollmentCodeResponse]
 	if err := client.Do(ctx, http.MethodPost, []string{"v1", "hosts", req.ID, "enrollment-code"}, nil, &resp); err != nil {
 		return nil, err
 	}
 
-	return &resp, nil
+	return &resp.Data, nil
 }
 
 type (
@@ -23,9 +23,7 @@ type (
 
 	// CreateEnrollmentCodeResponse is a response data model for CreateEnrollmentCode endpoint.
 	CreateEnrollmentCodeResponse struct {
-		Data struct {
-			Code            string `json:"code"`
-			LifetimeSeconds int    `json:"lifetimeSeconds"`
-		} `json:"data"`
+		Code            string `json:"code"`
+		LifetimeSeconds int    `json:"lifetimeSeconds"`
 	}
 )

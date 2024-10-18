@@ -6,7 +6,7 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/ghttp"
-	"github.com/onsi/gomega/gstruct"
+	. "github.com/onsi/gomega/gstruct"
 	"github.com/sendsmaily/terraform-provider-definednet/internal/definednet"
 )
 
@@ -45,7 +45,7 @@ var _ = Describe("executing API requests", func() {
 
 			Expect(server.ReceivedRequests()).
 				To(HaveExactElements(
-					HaveField("Header", gstruct.MatchKeys(gstruct.IgnoreExtras, gstruct.Keys{
+					HaveField("Header", MatchKeys(IgnoreExtras, Keys{
 						"Accept":        HaveExactElements("application/json"),
 						"Authorization": HaveExactElements("Bearer supersecret"),
 						"User-Agent":    HaveExactElements("Terraform-smaily-definednet/0.1.0"),
@@ -147,9 +147,9 @@ var _ = Describe("handling HTTP API success responses", func() {
 		}))
 
 		Expect(client.Do(ctx, http.MethodGet, []string{}, nil, &container)).To(Succeed())
-		Expect(container).To(gstruct.MatchAllFields(gstruct.Fields{
+		Expect(container).To(MatchAllFields(Fields{
 			"Field": Equal("value"),
-			"Nested": gstruct.MatchAllFields(gstruct.Fields{
+			"Nested": MatchAllFields(Fields{
 				"Field": Equal("nested_value"),
 			}),
 		}))
@@ -167,9 +167,9 @@ var _ = Describe("handling HTTP API success responses", func() {
 		}))
 
 		Expect(client.Do(ctx, http.MethodGet, []string{}, nil, &container)).To(Succeed())
-		Expect(container).To(gstruct.MatchAllFields(gstruct.Fields{
+		Expect(container).To(MatchAllFields(Fields{
 			"Field": Equal("value"),
-			"Nested": gstruct.MatchAllFields(gstruct.Fields{
+			"Nested": MatchAllFields(Fields{
 				"Field": Equal("nested_value"),
 			}),
 		}), "assert sanity")

@@ -46,18 +46,16 @@ var _ = Describe("creating hosts", func() {
 		server.AppendHandlers(ghttp.RespondWith(http.StatusOK, hostJSONResponse))
 		Expect(definednet.CreateHost(ctx, client, definednet.CreateHostRequest{})).
 			To(PointTo(MatchAllFields(Fields{
-				"Data": MatchAllFields(Fields{
-					"ID":              Equal("host-id"),
-					"NetworkID":       Equal("network-id"),
-					"RoleID":          Equal("role-id"),
-					"Name":            Equal("host.smaily.testing"),
-					"IPAddress":       Equal("10.0.0.1"),
-					"StaticAddresses": HaveExactElements("127.0.0.1:8484", "172.16.0.1:8484"),
-					"ListenPort":      Equal(8484),
-					"IsLighthouse":    BeTrue(),
-					"IsRelay":         BeTrue(),
-					"Tags":            HaveExactElements("tag:one", "tag:two"),
-				}),
+				"ID":              Equal("host-id"),
+				"NetworkID":       Equal("network-id"),
+				"RoleID":          Equal("role-id"),
+				"Name":            Equal("host.smaily.testing"),
+				"IPAddress":       Equal("10.0.0.1"),
+				"StaticAddresses": HaveExactElements("127.0.0.1:8484", "172.16.0.1:8484"),
+				"ListenPort":      Equal(8484),
+				"IsLighthouse":    BeTrue(),
+				"IsRelay":         BeTrue(),
+				"Tags":            HaveExactElements("tag:one", "tag:two"),
 			})))
 		Expect(server.ReceivedRequests()).NotTo(BeEmpty(), "assert sanity")
 	})
@@ -83,18 +81,16 @@ var _ = Describe("getting hosts", func() {
 		Expect(definednet.GetHost(ctx, client, definednet.GetHostRequest{
 			ID: "host-id",
 		})).To(PointTo(MatchAllFields(Fields{
-			"Data": MatchAllFields(Fields{
-				"ID":              Equal("host-id"),
-				"NetworkID":       Equal("network-id"),
-				"RoleID":          Equal("role-id"),
-				"Name":            Equal("host.smaily.testing"),
-				"IPAddress":       Equal("10.0.0.1"),
-				"StaticAddresses": HaveExactElements("127.0.0.1:8484", "172.16.0.1:8484"),
-				"ListenPort":      Equal(8484),
-				"IsLighthouse":    BeTrue(),
-				"IsRelay":         BeTrue(),
-				"Tags":            HaveExactElements("tag:one", "tag:two"),
-			}),
+			"ID":              Equal("host-id"),
+			"NetworkID":       Equal("network-id"),
+			"RoleID":          Equal("role-id"),
+			"Name":            Equal("host.smaily.testing"),
+			"IPAddress":       Equal("10.0.0.1"),
+			"StaticAddresses": HaveExactElements("127.0.0.1:8484", "172.16.0.1:8484"),
+			"ListenPort":      Equal(8484),
+			"IsLighthouse":    BeTrue(),
+			"IsRelay":         BeTrue(),
+			"Tags":            HaveExactElements("tag:one", "tag:two"),
 		})))
 		Expect(server.ReceivedRequests()).NotTo(BeEmpty(), "assert sanity")
 	})
@@ -129,18 +125,16 @@ var _ = Describe("updating hosts", func() {
 		server.AppendHandlers(ghttp.RespondWith(http.StatusOK, hostJSONResponse))
 		Expect(definednet.UpdateHost(ctx, client, definednet.UpdateHostRequest{})).
 			To(PointTo(MatchAllFields(Fields{
-				"Data": MatchAllFields(Fields{
-					"ID":              Equal("host-id"),
-					"NetworkID":       Equal("network-id"),
-					"RoleID":          Equal("role-id"),
-					"Name":            Equal("host.smaily.testing"),
-					"IPAddress":       Equal("10.0.0.1"),
-					"StaticAddresses": HaveExactElements("127.0.0.1:8484", "172.16.0.1:8484"),
-					"ListenPort":      Equal(8484),
-					"IsLighthouse":    BeTrue(),
-					"IsRelay":         BeTrue(),
-					"Tags":            HaveExactElements("tag:one", "tag:two"),
-				}),
+				"ID":              Equal("host-id"),
+				"NetworkID":       Equal("network-id"),
+				"RoleID":          Equal("role-id"),
+				"Name":            Equal("host.smaily.testing"),
+				"IPAddress":       Equal("10.0.0.1"),
+				"StaticAddresses": HaveExactElements("127.0.0.1:8484", "172.16.0.1:8484"),
+				"ListenPort":      Equal(8484),
+				"IsLighthouse":    BeTrue(),
+				"IsRelay":         BeTrue(),
+				"Tags":            HaveExactElements("tag:one", "tag:two"),
 			})))
 		Expect(server.ReceivedRequests()).NotTo(BeEmpty(), "assert sanity")
 	})

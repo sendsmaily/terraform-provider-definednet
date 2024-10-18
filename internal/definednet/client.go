@@ -40,6 +40,11 @@ type Client interface {
 	Do(ctx context.Context, method string, path []string, request, response any) error
 }
 
+// Response is a generic data model for Defined.net responses.
+type Response[D any] struct {
+	Data D `json:"data"`
+}
+
 type client struct {
 	endpoint *url.URL
 	token    string
