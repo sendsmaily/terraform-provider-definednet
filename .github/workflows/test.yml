@@ -75,7 +75,8 @@ jobs:
           terraform_version: ${{ matrix.terraform }}
           terraform_wrapper: false
       - run: go mod download
+      - run: go install -v github.com/onsi/ginkgo/v2/...
       - env:
           TF_ACC: "1"
-        run: go test -v -cover ./internal/...
+        run: ginkgo -r ./internal/...
         timeout-minutes: 10
