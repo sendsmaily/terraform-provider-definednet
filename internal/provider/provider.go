@@ -71,7 +71,12 @@ func (p *Provider) Configure(ctx context.Context, req provider.ConfigureRequest,
 		return
 	}
 
-	client := definednet.NewClient(DefinednetAPIEndpoint, config.Token.String())
+	client, err := definednet.NewClient(DefinednetAPIEndpoint, config.Token.String())
+	if err != nil {
+		resp.Diagnostics.AddError("Error initializing Defined.net HTTP API client", err.Error())
+		return
+	}
+
 	resp.ResourceData = client
 	resp.DataSourceData = client
 }
