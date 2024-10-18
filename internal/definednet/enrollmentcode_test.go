@@ -27,10 +27,8 @@ var _ = Describe("creating enrollment codes", func() {
 		server.AppendHandlers(ghttp.RespondWith(http.StatusOK, enrollmentCodeJSONResponse))
 		Expect(definednet.CreateEnrollmentCode(ctx, client, definednet.CreateEnrollmentCodeRequest{})).
 			To(PointTo(MatchAllFields(Fields{
-				"Data": MatchAllFields(Fields{
-					"Code":            Equal("supersecret"),
-					"LifetimeSeconds": Equal(300),
-				}),
+				"Code":            Equal("supersecret"),
+				"LifetimeSeconds": Equal(300),
 			})))
 		Expect(server.ReceivedRequests()).NotTo(BeEmpty(), "assert sanity")
 	})
