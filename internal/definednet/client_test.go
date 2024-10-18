@@ -7,7 +7,6 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/ghttp"
 	"github.com/onsi/gomega/gstruct"
-	"github.com/samber/lo"
 	"github.com/sendsmaily/terraform-provider-definednet/internal/definednet"
 )
 
@@ -39,18 +38,6 @@ var _ = Describe("API client's invariants", func() {
 })
 
 var _ = Describe("executing API requests", func() {
-	var (
-		server *ghttp.Server
-		client definednet.Client
-	)
-
-	BeforeEach(func() {
-		server = ghttp.NewServer()
-		DeferCleanup(server.Close)
-
-		client = lo.Must(definednet.NewClient(server.URL(), "supersecret"))
-	})
-
 	Context("request headers", func() {
 		Specify("all requests are executed with common HTTP headers", func(ctx SpecContext) {
 			server.AppendHandlers(ghttp.RespondWith(http.StatusOK, nil))
@@ -149,18 +136,6 @@ var _ = Describe("handling HTTP API success responses", func() {
 		} `json:"nested"`
 	}
 
-	var (
-		server *ghttp.Server
-		client definednet.Client
-	)
-
-	BeforeEach(func() {
-		server = ghttp.NewServer()
-		DeferCleanup(server.Close)
-
-		client = lo.Must(definednet.NewClient(server.URL(), "supersecret"))
-	})
-
 	Specify("API responses are deserialized into passed response payload container", func(ctx SpecContext) {
 		var container response
 
@@ -215,18 +190,6 @@ var _ = Describe("handling HTTP API success responses", func() {
 })
 
 var _ = Describe("handling HTTP API error responses", func() {
-	var (
-		server *ghttp.Server
-		client definednet.Client
-	)
-
-	BeforeEach(func() {
-		server = ghttp.NewServer()
-		DeferCleanup(server.Close)
-
-		client = lo.Must(definednet.NewClient(server.URL(), "supersecret"))
-	})
-
 	Specify("API errors are reported to the user", func(ctx SpecContext) {
 		server.AppendHandlers(ghttp.RespondWithJSONEncoded(
 			http.StatusBadRequest,
