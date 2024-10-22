@@ -5,9 +5,15 @@ import (
 	"net/http"
 )
 
+// EnrollmentCode is a data model for Defined.net host enrollment code.
+type EnrollmentCode struct {
+	Code            string `json:"code"`
+	LifetimeSeconds int    `json:"lifetimeSeconds"`
+}
+
 // CreateEnrollmentCode creates a Defined.net host enrollment code.
-func CreateEnrollmentCode(ctx context.Context, client Client, req CreateEnrollmentCodeRequest) (*CreateEnrollmentCodeResponse, error) {
-	var resp Response[CreateEnrollmentCodeResponse]
+func CreateEnrollmentCode(ctx context.Context, client Client, req CreateEnrollmentCodeRequest) (*EnrollmentCode, error) {
+	var resp Response[EnrollmentCode]
 	if err := client.Do(ctx, http.MethodPost, []string{"v1", "hosts", req.ID, "enrollment-code"}, nil, &resp); err != nil {
 		return nil, err
 	}
@@ -15,15 +21,7 @@ func CreateEnrollmentCode(ctx context.Context, client Client, req CreateEnrollme
 	return &resp.Data, nil
 }
 
-type (
-	// CreateEnrollmentCodeRequest is a request data model for CreateEnrollmentCode endpoint.
-	CreateEnrollmentCodeRequest struct {
-		ID string
-	}
-
-	// CreateEnrollmentCodeResponse is a response data model for CreateEnrollmentCode endpoint.
-	CreateEnrollmentCodeResponse struct {
-		Code            string `json:"code"`
-		LifetimeSeconds int    `json:"lifetimeSeconds"`
-	}
-)
+// CreateEnrollmentCodeRequest is a request data model for CreateEnrollmentCode endpoint.
+type CreateEnrollmentCodeRequest struct {
+	ID string
+}
