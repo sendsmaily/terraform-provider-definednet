@@ -99,7 +99,7 @@ var _ = Describe("getting hosts", func() {
 var _ = Describe("updating hosts", func() {
 	Specify("hosts are updated on Defined.net", func(ctx SpecContext) {
 		server.AppendHandlers(ghttp.CombineHandlers(
-			ghttp.VerifyRequest(http.MethodPut, "/v1/hosts/host-id"),
+			ghttp.VerifyRequest(http.MethodPut, "/v2/hosts/host-id"),
 			ghttp.VerifyJSONRepresenting(map[string]any{
 				"roleID":          "role-id",
 				"name":            "host.smaily.testing",

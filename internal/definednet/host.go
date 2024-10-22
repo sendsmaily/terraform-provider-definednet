@@ -70,7 +70,7 @@ type GetHostRequest struct {
 // UpdateHost updates a Defined.net host.
 func UpdateHost(ctx context.Context, client Client, req UpdateHostRequest) (*Host, error) {
 	var resp Response[Host]
-	if err := client.Do(ctx, http.MethodPut, []string{"v1", "hosts", req.ID}, req, &resp); err != nil {
+	if err := client.Do(ctx, http.MethodPut, []string{"v2", "hosts", req.ID}, req, &resp); err != nil {
 		return nil, err
 	}
 
