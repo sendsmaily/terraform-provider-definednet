@@ -3,27 +3,26 @@ package host_test
 import (
 	"testing"
 
+	tfprovider "github.com/hashicorp/terraform-plugin-framework/provider"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/sendsmaily/terraform-provider-definednet/internal/definednet"
-	fakeprovider "github.com/sendsmaily/terraform-provider-definednet/internal/testing/provider"
+	"github.com/sendsmaily/terraform-provider-definednet/internal/provider"
 	fakeserver "github.com/sendsmaily/terraform-provider-definednet/internal/testing/server"
 )
 
-var (
-	provider *fakeprovider.Provider
-
-	server *fakeserver.Server
-	client definednet.Client
-)
+var providerFactory func() tfprovider.Provider
 
 var _ = BeforeEach(func() {
-	server = fakeserver.New()
+	server := fakeserver.New()
 	DeferCleanup(server.Close)
 
-	client = server.Client()
-
-	provider = fakeprovider.New(client)
+	providerFactory = provider.New(
+		func(string, string) (definednet.Client, error) {
+			return server.Client(), nil
+		},
+		"test",
+	)
 })
 
 func TestSuite(t *testing.T) {

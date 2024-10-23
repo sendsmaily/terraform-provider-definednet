@@ -47,15 +47,15 @@ resource "definednet_host" "example" {
 ### Required
 
 - `name` (String) Host's name
-- `network_id` (String) Enrolled Network ID.
+- `network_id` (String) Enrolled Network ID
 
 ### Optional
 
-- `role_id` (String) Host's role ID on Defined.net.
-- `tags` (List of String) Host's tags on Defined.net.
+- `role_id` (String) Host's role ID on Defined.net
+- `tags` (List of String) Host's tags on Defined.net
 
 ### Read-Only
 
 - `enrollment_code` (String, Sensitive) Host's enrollment code
 - `id` (String) Host's ID
-- `ip_address` (String) Host's IP address on Defined.net overlay network.
+- `ip_address` (String) Host's IP address on Defined.net overlay network
