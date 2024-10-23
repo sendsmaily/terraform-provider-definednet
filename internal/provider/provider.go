@@ -9,8 +9,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/sendsmaily/terraform-provider-definednet/internal/definednet"
-	"github.com/sendsmaily/terraform-provider-definednet/internal/host"
-	"github.com/sendsmaily/terraform-provider-definednet/internal/lighthouse"
+	"github.com/sendsmaily/terraform-provider-definednet/internal/resource/host"
+	"github.com/sendsmaily/terraform-provider-definednet/internal/resource/lighthouse"
 )
 
 const (
