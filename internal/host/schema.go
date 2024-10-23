@@ -25,25 +25,25 @@ var Schema = schema.Schema{
 			Required:    true,
 		},
 		"network_id": schema.StringAttribute{
-			Description: "Enrolled Network ID.",
+			Description: "Enrolled Network ID",
 			Required:    true,
 			PlanModifiers: []planmodifier.String{
 				stringplanmodifier.RequiresReplace(),
 			},
 		},
 		"role_id": schema.StringAttribute{
-			Description: "Host's role ID on Defined.net.",
+			Description: "Host's role ID on Defined.net",
 			Optional:    true,
 		},
 		"ip_address": schema.StringAttribute{
-			Description: "Host's IP address on Defined.net overlay network.",
+			Description: "Host's IP address on Defined.net overlay network",
 			Computed:    true,
 			PlanModifiers: []planmodifier.String{
 				stringplanmodifier.UseStateForUnknown(),
 			},
 		},
 		"tags": schema.ListAttribute{
-			Description: "Host's tags on Defined.net.",
+			Description: "Host's tags on Defined.net",
 			ElementType: types.StringType,
 			Optional:    true,
 		},
