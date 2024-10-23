@@ -16,6 +16,9 @@ var Schema = schema.Schema{
 		"id": schema.StringAttribute{
 			Description: "Host's ID",
 			Computed:    true,
+			PlanModifiers: []planmodifier.String{
+				stringplanmodifier.UseStateForUnknown(),
+			},
 		},
 		"name": schema.StringAttribute{
 			Description: "Host's name",
@@ -35,6 +38,9 @@ var Schema = schema.Schema{
 		"ip_address": schema.StringAttribute{
 			Description: "Host's IP address on Defined.net overlay network.",
 			Computed:    true,
+			PlanModifiers: []planmodifier.String{
+				stringplanmodifier.UseStateForUnknown(),
+			},
 		},
 		"tags": schema.ListAttribute{
 			Description: "Host's tags on Defined.net.",
@@ -45,6 +51,9 @@ var Schema = schema.Schema{
 			Description: "Host's enrollment code",
 			Sensitive:   true,
 			Computed:    true,
+			PlanModifiers: []planmodifier.String{
+				stringplanmodifier.UseStateForUnknown(),
+			},
 		},
 	},
 }
