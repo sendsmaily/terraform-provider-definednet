@@ -13,7 +13,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/tfjsonpath"
 	. "github.com/onsi/ginkgo/v2"
 	"github.com/samber/lo"
-	"github.com/sendsmaily/terraform-provider-definednet/internal/host"
 )
 
 var _ = DescribeTable("host resource management",
@@ -21,7 +20,7 @@ var _ = DescribeTable("host resource management",
 		resource.Test(GinkgoT(), resource.TestCase{
 			Steps: lo.Map(steps, func(step resource.TestStep, _ int) resource.TestStep {
 				step.ProtoV6ProviderFactories = map[string]func() (tfprotov6.ProviderServer, error){
-					"definednet": providerserver.NewProtocol6WithError(provider.WithResource(host.NewResource())),
+					"definednet": providerserver.NewProtocol6WithError(providerFactory()),
 				}
 
 				return step
