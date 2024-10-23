@@ -1,6 +1,6 @@
 # Terraform Provider for Defined.net
 
-Documentation: https://registry.terraform.io/providers/smaily/definednet/latest/docs
+Documentation: https://registry.terraform.io/providers/sendsmaily/definednet/latest/docs
 
 ## Requirements
 
@@ -50,4 +50,4 @@ In order to run the full suite of Acceptance tests, run `make testacc`.
 make testacc
 ```
 
-> Consult the official documentation for more information on the test framework's internals: https://developer.hashicorp.com/terraform/plugin/sdkv2/testing/acceptance-tests.
+> Consult the official documentation for more information on the test framework's internals: https://developer.hashicorp.com/terraform/plugin/testing.
