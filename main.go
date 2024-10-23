@@ -24,7 +24,7 @@ func main() {
 	flag.Parse()
 
 	opts := providerserver.ServeOpts{
-		Address: "registry.terraform.io/smaily/definednet",
+		Address: "registry.terraform.io/sendsmaily/definednet",
 		Debug:   debug,
 	}
 
