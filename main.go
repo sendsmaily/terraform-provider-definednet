@@ -9,6 +9,7 @@ import (
 	"log"
 
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
+	"github.com/sendsmaily/terraform-provider-definednet/internal/definednet"
 	"github.com/sendsmaily/terraform-provider-definednet/internal/provider"
 )
 
@@ -23,14 +24,14 @@ func main() {
 	flag.BoolVar(&debug, "debug", false, "set to true to run the provider with support for debuggers like delve")
 	flag.Parse()
 
-	opts := providerserver.ServeOpts{
-		Address: "registry.terraform.io/sendsmaily/definednet",
-		Debug:   debug,
-	}
-
-	err := providerserver.Serve(context.Background(), provider.New(version), opts)
-
-	if err != nil {
+	if err := providerserver.Serve(
+		context.Background(),
+		provider.New(definednet.NewClient, version),
+		providerserver.ServeOpts{
+			Address: "registry.terraform.io/sendsmaily/definednet",
+			Debug:   debug,
+		},
+	); err != nil {
 		log.Fatal(err.Error())
 	}
 }
