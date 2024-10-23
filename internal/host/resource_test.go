@@ -31,6 +31,15 @@ var _ = DescribeTable("host resource management",
 	Entry("assert host is created in expected configuration",
 		resource.TestStep{
 			ConfigFile: config.StaticFile("testdata/host.tf"),
+			ConfigVariables: config.Variables{
+				"name":       config.StringVariable("host.defined.test"),
+				"network_id": config.StringVariable("network-id"),
+				"role_id":    config.StringVariable("role-id"),
+				"tags": config.ListVariable(
+					config.StringVariable("tag:one"),
+					config.StringVariable("tag:two"),
+				),
+			},
 			ConfigPlanChecks: resource.ConfigPlanChecks{
 				PreApply: []plancheck.PlanCheck{
 					// Assert sanity.
@@ -67,9 +76,27 @@ var _ = DescribeTable("host resource management",
 	Entry("assert simple updates are executed in-place",
 		resource.TestStep{
 			ConfigFile: config.StaticFile("testdata/host.tf"),
+			ConfigVariables: config.Variables{
+				"name":       config.StringVariable("host.defined.test"),
+				"network_id": config.StringVariable("network-id"),
+				"role_id":    config.StringVariable("role-id"),
+				"tags": config.ListVariable(
+					config.StringVariable("tag:one"),
+					config.StringVariable("tag:two"),
+				),
+			},
 		},
 		resource.TestStep{
-			ConfigFile: config.StaticFile("testdata/host_update.tf"),
+			ConfigFile: config.StaticFile("testdata/host.tf"),
+			ConfigVariables: config.Variables{
+				"name":       config.StringVariable("updated-host.defined.test"),
+				"network_id": config.StringVariable("network-id"),
+				"role_id":    config.StringVariable("updated-role-id"),
+				"tags": config.ListVariable(
+					config.StringVariable("tag:one"),
+					config.StringVariable("tag:three"),
+				),
+			},
 			ConfigPlanChecks: resource.ConfigPlanChecks{
 				PreApply: []plancheck.PlanCheck{
 					plancheck.ExpectResourceAction("definednet_host.test", plancheck.ResourceActionUpdate),
@@ -87,9 +114,27 @@ var _ = DescribeTable("host resource management",
 	Entry("assert updating network_id replaces the host",
 		resource.TestStep{
 			ConfigFile: config.StaticFile("testdata/host.tf"),
+			ConfigVariables: config.Variables{
+				"name":       config.StringVariable("host.defined.test"),
+				"network_id": config.StringVariable("network-id"),
+				"role_id":    config.StringVariable("role-id"),
+				"tags": config.ListVariable(
+					config.StringVariable("tag:one"),
+					config.StringVariable("tag:two"),
+				),
+			},
 		},
 		resource.TestStep{
-			ConfigFile: config.StaticFile("testdata/host_update_network_id.tf"),
+			ConfigFile: config.StaticFile("testdata/host.tf"),
+			ConfigVariables: config.Variables{
+				"name":       config.StringVariable("host.defined.test"),
+				"network_id": config.StringVariable("updated-network-id"),
+				"role_id":    config.StringVariable("role-id"),
+				"tags": config.ListVariable(
+					config.StringVariable("tag:one"),
+					config.StringVariable("tag:two"),
+				),
+			},
 			ConfigPlanChecks: resource.ConfigPlanChecks{
 				PreApply: []plancheck.PlanCheck{
 					// Assert the resource is replaced.
@@ -101,9 +146,27 @@ var _ = DescribeTable("host resource management",
 	Entry("assert importing host populates the host",
 		resource.TestStep{
 			ConfigFile: config.StaticFile("testdata/host.tf"),
+			ConfigVariables: config.Variables{
+				"name":       config.StringVariable("host.defined.test"),
+				"network_id": config.StringVariable("network-id"),
+				"role_id":    config.StringVariable("role-id"),
+				"tags": config.ListVariable(
+					config.StringVariable("tag:one"),
+					config.StringVariable("tag:two"),
+				),
+			},
 		},
 		resource.TestStep{
-			ConfigFile:              config.StaticFile("testdata/import.tf"),
+			ConfigFile: config.StaticFile("testdata/host.tf"),
+			ConfigVariables: config.Variables{
+				"name":       config.StringVariable("host.defined.test"),
+				"network_id": config.StringVariable("network-id"),
+				"role_id":    config.StringVariable("role-id"),
+				"tags": config.ListVariable(
+					config.StringVariable("tag:one"),
+					config.StringVariable("tag:two"),
+				),
+			},
 			ResourceName:            "definednet_host.test",
 			ImportState:             true,
 			ImportStateVerify:       true,
