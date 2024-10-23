@@ -9,6 +9,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/sendsmaily/terraform-provider-definednet/internal/definednet"
+	"github.com/sendsmaily/terraform-provider-definednet/internal/host"
+	"github.com/sendsmaily/terraform-provider-definednet/internal/lighthouse"
 )
 
 const (
@@ -69,7 +71,10 @@ func (p *Provider) Configure(ctx context.Context, req provider.ConfigureRequest,
 
 // Resources returns a slice of resources available on the provider.
 func (p *Provider) Resources(ctx context.Context) []func() resource.Resource {
-	return nil
+	return []func() resource.Resource{
+		lighthouse.NewResource,
+		host.NewResource,
+	}
 }
 
 // DataSources returns a slice of data sources available on the provider.
