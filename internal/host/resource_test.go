@@ -19,7 +19,6 @@ import (
 var _ = DescribeTable("host resource management",
 	func(steps ...resource.TestStep) {
 		resource.Test(GinkgoT(), resource.TestCase{
-
 			Steps: lo.Map(steps, func(step resource.TestStep, _ int) resource.TestStep {
 				step.ProtoV6ProviderFactories = map[string]func() (tfprotov6.ProviderServer, error){
 					"definednet": providerserver.NewProtocol6WithError(provider.WithResource(host.NewResource())),

@@ -6,7 +6,6 @@ import (
 	"fmt"
 
 	"github.com/hashicorp/terraform-plugin-framework/resource"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/sendsmaily/terraform-provider-definednet/internal/definednet"
 )
@@ -81,8 +80,10 @@ func (r *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 		return
 	}
 
-	state.ID = types.StringValue(host.ID)
-	state.IPAddress = types.StringValue(host.IPAddress)
+	resp.Diagnostics.Append(state.ApplyHost(ctx, host)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
 	tflog.Trace(ctx, "created Defined.net host", map[string]any{
 		"id":         state.ID.String(),
@@ -101,11 +102,14 @@ func (r *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 		return
 	}
 
-	state.EnrollmentCode = types.StringValue(code.Code)
-
 	tflog.Trace(ctx, "created Defined.net enrollment code", map[string]any{
 		"id": state.ID.String(),
 	})
+
+	resp.Diagnostics.Append(state.ApplyEnrollmentcode(ctx, code)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, state)...)
 }
@@ -144,17 +148,10 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 		return
 	}
 
-	state.Name = types.StringValue(host.Name)
-	state.NetworkID = types.StringValue(host.NetworkID)
-	state.RoleID = types.StringValue(host.RoleID)
-
-	tags, diags := types.ListValueFrom(ctx, types.StringType, host.Tags)
-	resp.Diagnostics.Append(diags...)
+	resp.Diagnostics.Append(state.ApplyHost(ctx, host)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
-
-	state.Tags = tags
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, state)...)
 
@@ -169,28 +166,23 @@ func (r *Resource) Read(ctx context.Context, req resource.ReadRequest, resp *res
 
 // Update updates Nebula hosts on Defined.net control plane.
 func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	var current, next State
+	var state State
 
-	resp.Diagnostics.Append(req.State.Get(ctx, &current)...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
-
-	resp.Diagnostics.Append(req.Plan.Get(ctx, &next)...)
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &state)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
 	var tags []string
-	resp.Diagnostics.Append(next.Tags.ElementsAs(ctx, &tags, false)...)
+	resp.Diagnostics.Append(state.Tags.ElementsAs(ctx, &tags, false)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
 	host, err := definednet.UpdateHost(ctx, r.client, definednet.UpdateHostRequest{
-		ID:              current.ID.ValueString(),
-		RoleID:          next.RoleID.ValueString(),
-		Name:            next.Name.ValueString(),
+		ID:              state.ID.ValueString(),
+		RoleID:          state.RoleID.ValueString(),
+		Name:            state.Name.ValueString(),
 		StaticAddresses: []string{},
 		ListenPort:      0,
 		Tags:            tags,
@@ -201,18 +193,19 @@ func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp 
 		return
 	}
 
-	next.ID = types.StringValue(host.ID)
-	next.IPAddress = types.StringValue(host.IPAddress)
-	next.EnrollmentCode = current.EnrollmentCode
+	resp.Diagnostics.Append(state.ApplyHost(ctx, host)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
-	resp.Diagnostics.Append(resp.State.Set(ctx, next)...)
+	resp.Diagnostics.Append(resp.State.Set(ctx, state)...)
 
 	tflog.Trace(ctx, "updated Defined.net host", map[string]any{
-		"id":         next.ID.String(),
-		"network_id": next.NetworkID.String(),
-		"role_id":    next.RoleID.String(),
-		"name":       next.Name.String(),
-		"tags":       next.Tags.String(),
+		"id":         state.ID.String(),
+		"network_id": state.NetworkID.String(),
+		"role_id":    state.RoleID.String(),
+		"name":       state.Name.String(),
+		"tags":       state.Tags.String(),
 	})
 }
 
@@ -227,20 +220,15 @@ func (r *Resource) ImportState(ctx context.Context, req resource.ImportStateRequ
 		return
 	}
 
-	tags, diags := types.ListValueFrom(ctx, types.StringType, host.Tags)
-	resp.Diagnostics.Append(diags...)
+	var state State
+	resp.Diagnostics.Append(state.ApplyHost(ctx, host)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	state := State{
-		ID:             types.StringValue(host.ID),
-		Name:           types.StringValue(host.Name),
-		NetworkID:      types.StringValue(host.NetworkID),
-		RoleID:         types.StringValue(host.RoleID),
-		IPAddress:      types.StringValue(host.IPAddress),
-		EnrollmentCode: types.StringNull(),
-		Tags:           tags,
+	resp.Diagnostics.Append(state.ApplyEnrollmentcode(ctx, &definednet.EnrollmentCode{})...)
+	if resp.Diagnostics.HasError() {
+		return
 	}
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, state)...)
