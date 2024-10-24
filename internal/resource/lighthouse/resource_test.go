@@ -65,7 +65,7 @@ var _ = DescribeTable("lighthouse resource management",
 				statecheck.ExpectKnownValue(
 					"definednet_lighthouse.test",
 					tfjsonpath.New("enrollment_code"),
-					knownvalue.StringRegexp(regexp.MustCompile(`^\w+$`)),
+					knownvalue.StringRegexp(regexp.MustCompile(`^.{32}$`)),
 				),
 			},
 			Check: resource.ComposeAggregateTestCheckFunc(

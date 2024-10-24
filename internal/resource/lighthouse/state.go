@@ -25,6 +25,14 @@ type State struct {
 	EnrollmentCode  types.String `tfsdk:"enrollment_code"`
 }
 
+// ApplyEnrollment applies Defined.net host enrollment information to the state.
+func (s *State) ApplyEnrollment(ctx context.Context, enrollment *definednet.Enrollment) (diags diag.Diagnostics) {
+	diags.Append(s.ApplyHost(ctx, &enrollment.Host)...)
+	s.EnrollmentCode = types.StringValue(enrollment.EnrollmentCode.Code)
+
+	return diags
+}
+
 // ApplyHost applies Defined.net lighthouse information to the state.
 func (s *State) ApplyHost(ctx context.Context, lighthouse *definednet.Host) (diags diag.Diagnostics) {
 	staticAddrs, d := types.ListValueFrom(ctx, types.StringType, lo.Map(lighthouse.StaticAddresses, func(addr string, idx int) string {
@@ -57,11 +65,5 @@ func (s *State) ApplyHost(ctx context.Context, lighthouse *definednet.Host) (dia
 	s.IPAddress = types.StringValue(lighthouse.IPAddress)
 	s.Tags = tags
 
-	return diags
-}
-
-// ApplyEnrollmentCode applies Defined.net enrollment code information to the state.
-func (s *State) ApplyEnrollmentcode(_ context.Context, code *definednet.EnrollmentCode) (diags diag.Diagnostics) {
-	s.EnrollmentCode = types.StringValue(code.Code)
 	return diags
 }
