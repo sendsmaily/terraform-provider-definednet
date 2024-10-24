@@ -26,11 +26,10 @@ func New() *Server {
 	}
 
 	// Hosts.
-	mux.Post("/v1/hosts", srv.createHost)
+	mux.Post("/v1/host-and-enrollment-code", srv.createEnrollment)
 	mux.Delete("/v1/hosts/{id}", srv.deleteHost)
 	mux.Get("/v1/hosts/{id}", srv.getHost)
 	mux.Put("/v2/hosts/{id}", srv.updateHost)
-	mux.Post("/v1/hosts/{id}/enrollment-code", srv.createEnrollmentCode)
 
 	srv.server = httptest.NewServer(mux)
 
