@@ -5,6 +5,10 @@ name: Tests
 # Optionally, you can turn it on using a schedule for regular testing.
 on:
   push:
+    branches-ignore:
+      - main # We require rebased topic branches making testing main moot.
+    tags-ignore:
+      - "**"
     paths-ignore:
       - "README.md"
 
