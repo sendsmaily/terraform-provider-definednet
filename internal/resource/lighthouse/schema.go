@@ -3,10 +3,14 @@ package lighthouse
 import (
 	_ "embed"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/sendsmaily/terraform-provider-definednet/internal/validation"
 )
 
 // Schema is the lighthouse resource's schema.
@@ -16,6 +20,9 @@ var Schema = schema.Schema{
 		"name": schema.StringAttribute{
 			Description: "Lighthouse's name",
 			Required:    true,
+			Validators: []validator.String{
+				stringvalidator.LengthAtMost(255),
+			},
 		},
 		"network_id": schema.StringAttribute{
 			Description: "Enrolled Network ID",
@@ -32,6 +39,10 @@ var Schema = schema.Schema{
 			Description: "Lighthouse's static IP addresses",
 			ElementType: types.StringType,
 			Required:    true,
+			Validators: []validator.List{
+				listvalidator.UniqueValues(),
+				listvalidator.ValueStringsAre(validation.IPAddress()),
+			},
 		},
 		"listen_port": schema.Int32Attribute{
 			Description: "Lighthouse's listen port",
@@ -41,6 +52,10 @@ var Schema = schema.Schema{
 			Description: "Lighthouse's tags on Defined.net",
 			ElementType: types.StringType,
 			Optional:    true,
+			Validators: []validator.List{
+				listvalidator.UniqueValues(),
+				listvalidator.ValueStringsAre(validation.HostTag()),
+			},
 		},
 		"id": schema.StringAttribute{
 			Description: "Lighthouse's ID",
