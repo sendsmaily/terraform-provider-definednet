@@ -64,7 +64,7 @@ func (r *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 		return
 	}
 
-	host, err := definednet.CreateHost(ctx, r.client, definednet.CreateHostRequest{
+	enrollment, err := definednet.CreateEnrollment(ctx, r.client, definednet.CreateEnrollmentRequest{
 		NetworkID:       state.NetworkID.ValueString(),
 		RoleID:          state.RoleID.ValueString(),
 		Name:            state.Name.ValueString(),
@@ -80,38 +80,20 @@ func (r *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 		return
 	}
 
-	resp.Diagnostics.Append(state.ApplyHost(ctx, host)...)
+	resp.Diagnostics.Append(state.ApplyEnrollment(ctx, enrollment)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	tflog.Trace(ctx, "created Defined.net host", map[string]any{
+	resp.Diagnostics.Append(resp.State.Set(ctx, state)...)
+
+	tflog.Trace(ctx, "enrolled Defined.net host", map[string]any{
 		"id":         state.ID.String(),
 		"network_id": state.NetworkID.String(),
 		"role_id":    state.RoleID.String(),
 		"name":       state.Name.String(),
 		"tags":       state.Tags.String(),
 	})
-
-	code, err := definednet.CreateEnrollmentCode(ctx, r.client, definednet.CreateEnrollmentCodeRequest{
-		ID: state.ID.ValueString(),
-	})
-
-	if err != nil {
-		resp.Diagnostics.AddError("Request Failure", err.Error())
-		return
-	}
-
-	tflog.Trace(ctx, "created Defined.net enrollment code", map[string]any{
-		"id": state.ID.String(),
-	})
-
-	resp.Diagnostics.Append(state.ApplyEnrollmentcode(ctx, code)...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
-
-	resp.Diagnostics.Append(resp.State.Set(ctx, state)...)
 }
 
 // Delete deletes Nebula hosts from Defined.net control plane.
@@ -222,11 +204,6 @@ func (r *Resource) ImportState(ctx context.Context, req resource.ImportStateRequ
 
 	var state State
 	resp.Diagnostics.Append(state.ApplyHost(ctx, host)...)
-	if resp.Diagnostics.HasError() {
-		return
-	}
-
-	resp.Diagnostics.Append(state.ApplyEnrollmentcode(ctx, &definednet.EnrollmentCode{})...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
