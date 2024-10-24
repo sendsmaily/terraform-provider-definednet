@@ -60,7 +60,7 @@ var _ = DescribeTable("host resource management",
 				statecheck.ExpectKnownValue(
 					"definednet_host.test",
 					tfjsonpath.New("enrollment_code"),
-					knownvalue.StringRegexp(regexp.MustCompile(`^\w+$`)),
+					knownvalue.StringRegexp(regexp.MustCompile(`^.{32}$`)),
 				),
 			},
 			Check: resource.ComposeAggregateTestCheckFunc(

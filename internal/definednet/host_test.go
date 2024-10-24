@@ -10,57 +10,6 @@ import (
 	"github.com/sendsmaily/terraform-provider-definednet/internal/definednet"
 )
 
-var _ = Describe("creating hosts", func() {
-	Specify("hosts are created on Defined.net", func(ctx SpecContext) {
-		server.AppendHandlers(ghttp.CombineHandlers(
-			ghttp.VerifyRequest(http.MethodPost, "/v1/hosts"),
-			ghttp.VerifyJSONRepresenting(map[string]any{
-				"networkID":       "network-id",
-				"roleID":          "role-id",
-				"name":            "host.defined.test",
-				"ipAddress":       "10.0.0.1",
-				"staticAddresses": []string{"127.0.0.1:8484", "172.16.0.1:8484"},
-				"listenPort":      8484,
-				"isLighthouse":    true,
-				"isRelay":         true,
-				"tags":            []string{"tag:one", "tag:two"},
-			}),
-			ghttp.RespondWithJSONEncoded(http.StatusOK, map[string]any{}),
-		))
-
-		Expect(definednet.CreateHost(ctx, client, definednet.CreateHostRequest{
-			NetworkID:       "network-id",
-			RoleID:          "role-id",
-			Name:            "host.defined.test",
-			IPAddress:       "10.0.0.1",
-			StaticAddresses: []string{"127.0.0.1:8484", "172.16.0.1:8484"},
-			ListenPort:      8484,
-			IsLighthouse:    true,
-			IsRelay:         true,
-			Tags:            []string{"tag:one", "tag:two"},
-		})).Error().NotTo(HaveOccurred())
-		Expect(server.ReceivedRequests()).NotTo(BeEmpty(), "assert sanity")
-	})
-
-	Specify("Defined.net responses are returned", func(ctx SpecContext) {
-		server.AppendHandlers(ghttp.RespondWith(http.StatusOK, hostJSONResponse))
-		Expect(definednet.CreateHost(ctx, client, definednet.CreateHostRequest{})).
-			To(PointTo(MatchAllFields(Fields{
-				"ID":              Equal("host-id"),
-				"NetworkID":       Equal("network-id"),
-				"RoleID":          Equal("role-id"),
-				"Name":            Equal("host.defined.test"),
-				"IPAddress":       Equal("10.0.0.1"),
-				"StaticAddresses": HaveExactElements("127.0.0.1:8484", "172.16.0.1:8484"),
-				"ListenPort":      Equal(8484),
-				"IsLighthouse":    BeTrue(),
-				"IsRelay":         BeTrue(),
-				"Tags":            HaveExactElements("tag:one", "tag:two"),
-			})))
-		Expect(server.ReceivedRequests()).NotTo(BeEmpty(), "assert sanity")
-	})
-})
-
 var _ = Describe("deleting hosts", func() {
 	Specify("hosts are deleted from Defined.net", func(ctx SpecContext) {
 		server.AppendHandlers(ghttp.VerifyRequest(http.MethodDelete, "/v1/hosts/host-id"))
@@ -123,6 +72,7 @@ var _ = Describe("updating hosts", func() {
 
 	Specify("Defined.net responses are returned", func(ctx SpecContext) {
 		server.AppendHandlers(ghttp.RespondWith(http.StatusOK, hostJSONResponse))
+
 		Expect(definednet.UpdateHost(ctx, client, definednet.UpdateHostRequest{})).
 			To(PointTo(MatchAllFields(Fields{
 				"ID":              Equal("host-id"),
@@ -136,6 +86,7 @@ var _ = Describe("updating hosts", func() {
 				"IsRelay":         BeTrue(),
 				"Tags":            HaveExactElements("tag:one", "tag:two"),
 			})))
+
 		Expect(server.ReceivedRequests()).NotTo(BeEmpty(), "assert sanity")
 	})
 })

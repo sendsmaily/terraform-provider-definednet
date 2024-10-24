@@ -19,29 +19,6 @@ type Host struct {
 	Tags            []string `json:"tags"`
 }
 
-// CreateHost creates a Defined.net host.
-func CreateHost(ctx context.Context, client Client, req CreateHostRequest) (*Host, error) {
-	var resp Response[Host]
-	if err := client.Do(ctx, http.MethodPost, []string{"v1", "hosts"}, req, &resp); err != nil {
-		return nil, err
-	}
-
-	return &resp.Data, nil
-}
-
-// CreateHostRequest is a request data model for CreateHost endpoint.
-type CreateHostRequest struct {
-	NetworkID       string   `json:"networkID"`
-	RoleID          string   `json:"roleID"`
-	Name            string   `json:"name"`
-	IPAddress       string   `json:"ipAddress"`
-	StaticAddresses []string `json:"staticAddresses"`
-	ListenPort      int      `json:"listenPort"`
-	IsLighthouse    bool     `json:"isLighthouse"`
-	IsRelay         bool     `json:"isRelay"`
-	Tags            []string `json:"tags"`
-}
-
 // DeleteHost deletes a Defined.net host.
 func DeleteHost(ctx context.Context, client Client, req DeleteHostRequest) error {
 	return client.Do(ctx, http.MethodDelete, []string{"v1", "hosts", req.ID}, nil, nil)
