@@ -11,13 +11,11 @@ import (
 // IPAddress validates the value is an IP address.
 //
 // Null (unconfigured) and unknown (known after apply) values are skipped.
-func IPAddress() ipaddressValidator {
+func IPAddress() validator.String {
 	return ipaddressValidator{}
 }
 
 type ipaddressValidator struct{}
-
-var _ validator.String = ipaddressValidator{}
 
 func (validator ipaddressValidator) Description(_ context.Context) string {
 	return "value must be an IP address"
