@@ -8,6 +8,7 @@ updates:
       interval: "daily"
     groups:
       update:
+        dependency-type: production
         applies-to: version-updates
     prefix: "deps"
   - package-ecosystem: "github-actions"
