@@ -10,9 +10,11 @@ updates:
       update:
         dependency-type: production
         applies-to: version-updates
-    prefix: "deps"
+    commit-message:
+      prefix: "deps"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "daily"
-    prefix: "tooling"
+    commit-message:
+      prefix: "tooling"
