@@ -18,17 +18,11 @@ func (s *Server) createEnrollment(w http.ResponseWriter, r *http.Request) {
 
 	state := Host{
 		Host: definednet.Host{
-			ID:        fmt.Sprintf("host-%s", strings.ToUpper(lo.RandomString(8, lo.AlphanumericCharset))),
-			NetworkID: req.NetworkID,
-			RoleID:    req.RoleID,
-			Name:      req.Name,
-			IPAddress: func() string {
-				if !lo.IsEmpty(req.IPAddress) {
-					return req.IPAddress
-				}
-
-				return "10.0.0.1"
-			}(),
+			ID:              fmt.Sprintf("host-%s", strings.ToUpper(lo.RandomString(8, lo.AlphanumericCharset))),
+			NetworkID:       req.NetworkID,
+			RoleID:          req.RoleID,
+			Name:            req.Name,
+			IPAddress:       "10.0.0.1",
 			StaticAddresses: req.StaticAddresses,
 			ListenPort:      req.ListenPort,
 			IsLighthouse:    req.IsLighthouse,
