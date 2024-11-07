@@ -34,7 +34,6 @@ type CreateEnrollmentRequest struct {
 	NetworkID       string   `json:"networkID"`
 	RoleID          string   `json:"roleID"`
 	Name            string   `json:"name"`
-	IPAddress       string   `json:"ipAddress"`
 	StaticAddresses []string `json:"staticAddresses"`
 	ListenPort      int      `json:"listenPort"`
 	IsLighthouse    bool     `json:"isLighthouse"`
