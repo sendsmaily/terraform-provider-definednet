@@ -172,4 +172,15 @@ var _ = DescribeTable("host resource management",
 			ImportStateVerifyIgnore: []string{"enrollment_code"},
 		},
 	),
+	Entry("assert optional fields are optional",
+		resource.TestStep{
+			ConfigFile: config.StaticFile("testdata/host.tf"),
+			ConfigVariables: config.Variables{
+				"name":       config.StringVariable("host.defined.test"),
+				"network_id": config.StringVariable("network-id"),
+				"role_id":    nil,
+				"tags":       nil,
+			},
+		},
+	),
 )

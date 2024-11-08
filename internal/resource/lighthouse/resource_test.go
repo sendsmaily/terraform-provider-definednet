@@ -213,4 +213,20 @@ var _ = DescribeTable("lighthouse resource management",
 			ImportStateVerifyIgnore: []string{"enrollment_code"},
 		},
 	),
+	Entry("assert optional fields are optional",
+		resource.TestStep{
+			ConfigFile: config.StaticFile("testdata/lighthouse.tf"),
+			ConfigVariables: config.Variables{
+				"name":        config.StringVariable("lighthouse.defined.test"),
+				"network_id":  config.StringVariable("network-id"),
+				"listen_port": config.IntegerVariable(8484),
+				"static_addresses": config.ListVariable(
+					config.StringVariable("127.0.0.1"),
+					config.StringVariable("172.16.0.1"),
+				),
+				"role_id": nil,
+				"tags":    nil,
+			},
+		},
+	),
 )

@@ -5,6 +5,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/samber/lo"
 	"github.com/sendsmaily/terraform-provider-definednet/internal/definednet"
 )
 
@@ -33,8 +34,14 @@ func (s *State) ApplyHost(ctx context.Context, host *definednet.Host) (diags dia
 	s.IPAddress = types.StringValue(host.IPAddress)
 	s.Name = types.StringValue(host.Name)
 	s.NetworkID = types.StringValue(host.NetworkID)
-	s.RoleID = types.StringValue(host.RoleID)
-	s.Tags, diags = types.ListValueFrom(ctx, types.StringType, host.Tags)
+
+	if !lo.IsEmpty(host.RoleID) {
+		s.RoleID = types.StringValue(host.RoleID)
+	}
+
+	if len(host.Tags) > 0 {
+		s.Tags, diags = types.ListValueFrom(ctx, types.StringType, host.Tags)
+	}
 
 	return diags
 }
