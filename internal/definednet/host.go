@@ -7,16 +7,17 @@ import (
 
 // Host is a data model for Defined.net host.
 type Host struct {
-	ID              string   `json:"id"`
-	NetworkID       string   `json:"networkID"`
-	RoleID          string   `json:"roleID"`
-	Name            string   `json:"name"`
-	IPAddress       string   `json:"ipAddress"`
-	StaticAddresses []string `json:"staticAddresses"`
-	ListenPort      int      `json:"listenPort"`
-	IsLighthouse    bool     `json:"isLighthouse"`
-	IsRelay         bool     `json:"isRelay"`
-	Tags            []string `json:"tags"`
+	ID              string           `json:"id"`
+	NetworkID       string           `json:"networkID"`
+	RoleID          string           `json:"roleID"`
+	Name            string           `json:"name"`
+	IPAddress       string           `json:"ipAddress"`
+	StaticAddresses []string         `json:"staticAddresses"`
+	ListenPort      int              `json:"listenPort"`
+	IsLighthouse    bool             `json:"isLighthouse"`
+	IsRelay         bool             `json:"isRelay"`
+	Tags            []string         `json:"tags"`
+	ConfigOverrides []ConfigOverride `json:"configOverrides"`
 }
 
 // DeleteHost deletes a Defined.net host.
@@ -56,10 +57,11 @@ func UpdateHost(ctx context.Context, client Client, req UpdateHostRequest) (*Hos
 
 // UpdateHostRequest is a request data model for UpdateHost endpoint.
 type UpdateHostRequest struct {
-	ID              string   `json:"-"`
-	RoleID          string   `json:"roleID"`
-	Name            string   `json:"name"`
-	StaticAddresses []string `json:"staticAddresses"`
-	ListenPort      int      `json:"listenPort"`
-	Tags            []string `json:"tags"`
+	ID              string           `json:"-"`
+	RoleID          string           `json:"roleID"`
+	Name            string           `json:"name"`
+	StaticAddresses []string         `json:"staticAddresses"`
+	ListenPort      int              `json:"listenPort"`
+	Tags            []string         `json:"tags"`
+	ConfigOverrides []ConfigOverride `json:"configOverrides"`
 }

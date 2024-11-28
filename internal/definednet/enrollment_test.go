@@ -23,6 +23,9 @@ var _ = Describe("creating host enrollments", func() {
 				"isLighthouse":    true,
 				"isRelay":         true,
 				"tags":            []string{"tag:one", "tag:two"},
+				"configOverrides": []map[string]string{
+					{"key": "config.override", "value": "value"},
+				},
 			}),
 			ghttp.RespondWithJSONEncoded(http.StatusOK, map[string]any{}),
 		))
@@ -36,6 +39,9 @@ var _ = Describe("creating host enrollments", func() {
 			IsLighthouse:    true,
 			IsRelay:         true,
 			Tags:            []string{"tag:one", "tag:two"},
+			ConfigOverrides: []definednet.ConfigOverride{
+				{Key: "config.override", Value: "value"},
+			},
 		})).Error().NotTo(HaveOccurred())
 
 		Expect(server.ReceivedRequests()).NotTo(BeEmpty(), "assert sanity")
@@ -57,6 +63,12 @@ var _ = Describe("creating host enrollments", func() {
 					"IsLighthouse":    BeTrue(),
 					"IsRelay":         BeTrue(),
 					"Tags":            HaveExactElements("tag:one", "tag:two"),
+					"ConfigOverrides": HaveExactElements(
+						MatchAllFields(Fields{
+							"Key":   Equal("config.override"),
+							"Value": Equal("value"),
+						}),
+					),
 				}),
 				"EnrollmentCode": MatchAllFields(Fields{
 					"Code":            Equal("supersecret"),
@@ -95,7 +107,10 @@ var enrollmentJSONResponse = `{
         "platform": "dnclient",
         "updateAvailable": false,
         "version": "0.1.9"
-      }
+      },
+	  "configOverrides": [
+	    {"key": "config.override", "value": "value"}
+	  ]
     },
     "enrollmentCode": {
       "code": "supersecret",
