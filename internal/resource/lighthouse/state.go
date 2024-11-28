@@ -23,6 +23,17 @@ type State struct {
 	IPAddress       types.String `tfsdk:"ip_address"`
 	Tags            types.List   `tfsdk:"tags"`
 	EnrollmentCode  types.String `tfsdk:"enrollment_code"`
+	Metrics         *Metrics     `tfsdk:"metrics"`
+}
+
+// Metrics is the host metrics exporter's state.
+type Metrics struct {
+	Enabled            types.Bool   `tfsdk:"enabled"`
+	Listen             types.String `tfsdk:"listen"`
+	Path               types.String `tfsdk:"path"`
+	Namespace          types.String `tfsdk:"namespace"`
+	Subsystem          types.String `tfsdk:"subsystem"`
+	EnableExtraMetrics types.Bool   `tfsdk:"enable_extra_metrics"`
 }
 
 // ApplyEnrollment applies Defined.net host enrollment information to the state.
@@ -72,5 +83,71 @@ func (s *State) ApplyHost(ctx context.Context, lighthouse *definednet.Host) (dia
 		s.RoleID = types.StringValue(lighthouse.RoleID)
 	}
 
+	metricsConfig := lo.Reduce(lighthouse.ConfigOverrides, func(m Metrics, o definednet.ConfigOverride, _ int) Metrics {
+		switch o.Key {
+		case "stats.type":
+			if o.Value != "prometheus" {
+				diags.AddError("Unsupported Metrics Backend", fmt.Sprintf("Expected 'prometheus', got '%s'", o.Value))
+			}
+
+			m.Enabled = types.BoolValue(true)
+
+		case "stats.listen":
+			v, err := convert[string](o.Value)
+			if err != nil {
+				diags.AddAttributeError(path.Root("metrics").AtMapKey("listen"), "Invalid Value", err.Error())
+			}
+
+			m.Listen = types.StringValue(v)
+
+		case "stats.path":
+			v, err := convert[string](o.Value)
+			if err != nil {
+				diags.AddAttributeError(path.Root("metrics").AtMapKey("path"), "Invalid Value", err.Error())
+			}
+
+			m.Path = types.StringValue(v)
+
+		case "stats.namespace":
+			v, err := convert[string](o.Value)
+			if err != nil {
+				diags.AddAttributeError(path.Root("metrics").AtMapKey("namespace"), "Invalid Value", err.Error())
+			}
+
+			m.Namespace = types.StringValue(v)
+
+		case "stats.subsystem":
+			v, err := convert[string](o.Value)
+			if err != nil {
+				diags.AddAttributeError(path.Root("metrics").AtMapKey("subsystem"), "Invalid Value", err.Error())
+			}
+
+			m.Subsystem = types.StringValue(v)
+
+		case "stats.lighthouse_metrics":
+			v, err := convert[bool](o.Value)
+			if err != nil {
+				diags.AddAttributeError(path.Root("metrics").AtMapKey("enable_extra_metrics"), "Invalid Value", err.Error())
+			}
+
+			m.EnableExtraMetrics = types.BoolValue(v)
+		}
+
+		return m
+	}, Metrics{})
+
+	if lo.IsNotEmpty(metricsConfig) {
+		s.Metrics = &metricsConfig
+	}
+
 	return diags
+}
+
+func convert[T any](val any) (T, error) {
+	if val, ok := val.(T); ok {
+		return val, nil
+	}
+
+	var t T
+	return t, fmt.Errorf("unexpected type: wanted %T, got %T", t, val)
 }

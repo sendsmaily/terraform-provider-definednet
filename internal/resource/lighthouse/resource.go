@@ -82,6 +82,21 @@ func (r *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 		IsLighthouse: true,
 		IsRelay:      false,
 		Tags:         tags,
+		ConfigOverrides: func() []definednet.ConfigOverride {
+			if lo.IsNil(state.Metrics) || !state.Metrics.Enabled.ValueBool() {
+				return nil
+			}
+
+			return []definednet.ConfigOverride{
+				{Key: "stats.type", Value: "prometheus"},
+				{Key: "stats.listen", Value: state.Metrics.Listen.ValueString()},
+				{Key: "stats.path", Value: state.Metrics.Path.ValueString()},
+				{Key: "stats.namespace", Value: state.Metrics.Namespace.ValueString()},
+				{Key: "stats.subsystem", Value: state.Metrics.Subsystem.ValueString()},
+				{Key: "stats.lighthouse_metrics", Value: state.Metrics.EnableExtraMetrics.ValueBool()},
+				{Key: "stats.interval", Value: "60s"},
+			}
+		}(),
 	})
 
 	if err != nil {
@@ -189,6 +204,21 @@ func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp 
 		}),
 		ListenPort: int(state.ListenPort.ValueInt32()),
 		Tags:       tags,
+		ConfigOverrides: func() []definednet.ConfigOverride {
+			if lo.IsNil(state.Metrics) || !state.Metrics.Enabled.ValueBool() {
+				return nil
+			}
+
+			return []definednet.ConfigOverride{
+				{Key: "stats.type", Value: "prometheus"},
+				{Key: "stats.listen", Value: state.Metrics.Listen.ValueString()},
+				{Key: "stats.path", Value: state.Metrics.Path.ValueString()},
+				{Key: "stats.namespace", Value: state.Metrics.Namespace.ValueString()},
+				{Key: "stats.subsystem", Value: state.Metrics.Subsystem.ValueString()},
+				{Key: "stats.lighthouse_metrics", Value: state.Metrics.EnableExtraMetrics.ValueBool()},
+				{Key: "stats.interval", Value: "60s"},
+			}
+		}(),
 	})
 
 	if err != nil {
