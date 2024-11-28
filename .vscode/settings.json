@@ -1,9 +1,11 @@
 {
   "[json]": {
-    "editor.indentSize": 2
+    "editor.indentSize": 2,
+    "editor.defaultFormatter": "vscode.json-language-features"
   },
   "[jsonc]": {
-    "editor.indentSize": 2
+    "editor.indentSize": 2,
+    "editor.defaultFormatter": "vscode.json-language-features"
   },
   "[terraform]": {
     "editor.tabSize": 2,
@@ -27,6 +29,14 @@
     "editor.formatOnSave": false,
     "editor.codeActionsOnSave": {
       "source.formatAll.terraform": "always"
+    }
+  },
+  "cSpell.customDictionaries": {
+    "workspace": {
+      "name": "workspace",
+      "path": "${workspaceFolder}/.cspell/workspace.txt",
+      "addWords": true,
+      "scope": "workspace"
     }
   },
   "editor.formatOnSave": true,
