@@ -181,6 +181,27 @@ var _ = DescribeTable("host resource management",
 				"role_id":    nil,
 				"tags":       nil,
 			},
+			ConfigStateChecks: []statecheck.StateCheck{
+				statecheck.ExpectKnownValue("definednet_host.test", tfjsonpath.New("role_id"), knownvalue.Null()),
+				statecheck.ExpectKnownValue("definednet_host.test", tfjsonpath.New("tags"), knownvalue.Null()),
+			},
+		},
+		resource.TestStep{
+			ConfigFile: config.StaticFile("testdata/host.tf"),
+			ConfigVariables: config.Variables{
+				"name":       config.StringVariable("host.defined.test"),
+				"network_id": config.StringVariable("network-id"),
+				"role_id":    nil,
+				"tags":       nil,
+			},
+			ResourceName:            "definednet_host.test",
+			ImportState:             true,
+			ImportStateVerify:       true,
+			ImportStateVerifyIgnore: []string{"enrollment_code"},
+			ConfigStateChecks: []statecheck.StateCheck{
+				statecheck.ExpectKnownValue("definednet_host.test", tfjsonpath.New("role_id"), knownvalue.Null()),
+				statecheck.ExpectKnownValue("definednet_host.test", tfjsonpath.New("tags"), knownvalue.Null()),
+			},
 		},
 	),
 )

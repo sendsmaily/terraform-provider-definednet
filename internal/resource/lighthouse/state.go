@@ -54,21 +54,20 @@ func (s *State) ApplyHost(ctx context.Context, lighthouse *definednet.Host) (dia
 	diags.Append(d...)
 
 	s.ID = types.StringValue(lighthouse.ID)
+	s.Name = types.StringValue(lighthouse.Name)
 	s.NetworkID = types.StringValue(lighthouse.NetworkID)
 	s.StaticAddresses = staticAddrs
 	s.ListenPort = types.Int32Value(int32(lighthouse.ListenPort))
-	s.Name = types.StringValue(lighthouse.Name)
 	s.IPAddress = types.StringValue(lighthouse.IPAddress)
 
-	if !lo.IsEmpty(lighthouse.RoleID) {
+	s.RoleID = types.StringNull()
+	if lo.IsNotEmpty(lighthouse.RoleID) {
 		s.RoleID = types.StringValue(lighthouse.RoleID)
 	}
 
-	if len(lighthouse.Tags) > 0 {
-		tags, d := types.ListValueFrom(ctx, types.StringType, lighthouse.Tags)
-		s.Tags = tags
-		diags.Append(d...)
-	}
+	tags, d := types.ListValueFrom(ctx, types.StringType, lighthouse.Tags)
+	s.Tags = tags
+	diags.Append(d...)
 
 	return diags
 }

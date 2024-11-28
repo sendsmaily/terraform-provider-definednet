@@ -227,6 +227,32 @@ var _ = DescribeTable("lighthouse resource management",
 				"role_id": nil,
 				"tags":    nil,
 			},
+			ConfigStateChecks: []statecheck.StateCheck{
+				statecheck.ExpectKnownValue("definednet_lighthouse.test", tfjsonpath.New("role_id"), knownvalue.Null()),
+				statecheck.ExpectKnownValue("definednet_lighthouse.test", tfjsonpath.New("tags"), knownvalue.Null()),
+			},
+		},
+		resource.TestStep{
+			ConfigFile: config.StaticFile("testdata/lighthouse.tf"),
+			ConfigVariables: config.Variables{
+				"name":        config.StringVariable("lighthouse.defined.test"),
+				"network_id":  config.StringVariable("network-id"),
+				"listen_port": config.IntegerVariable(8484),
+				"static_addresses": config.ListVariable(
+					config.StringVariable("127.0.0.1"),
+					config.StringVariable("172.16.0.1"),
+				),
+				"role_id": nil,
+				"tags":    nil,
+			},
+			ResourceName:            "definednet_lighthouse.test",
+			ImportState:             true,
+			ImportStateVerify:       true,
+			ImportStateVerifyIgnore: []string{"enrollment_code"},
+			ConfigStateChecks: []statecheck.StateCheck{
+				statecheck.ExpectKnownValue("definednet_lighthouse.test", tfjsonpath.New("role_id"), knownvalue.Null()),
+				statecheck.ExpectKnownValue("definednet_lighthouse.test", tfjsonpath.New("tags"), knownvalue.Null()),
+			},
 		},
 	),
 )
