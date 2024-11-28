@@ -1,0 +1,16 @@
+{
+  "version": "0.2",
+  "ignorePaths": [],
+  "dictionaryDefinitions": [
+    {
+      "name": "workspace",
+      "path": ".cspell/workspace.txt"
+    }
+  ],
+  "dictionaries": [
+    "workspace"
+  ],
+  "words": [],
+  "ignoreWords": [],
+  "import": []
+}
