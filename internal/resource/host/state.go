@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/samber/lo"
 	"github.com/sendsmaily/terraform-provider-definednet/internal/definednet"
@@ -67,19 +68,44 @@ func (s *State) ApplyHost(ctx context.Context, host *definednet.Host) (diags dia
 			m.Enabled = types.BoolValue(true)
 
 		case "stats.listen":
-			m.Listen = types.StringValue(o.Value.(string))
+			v, err := convert[string](o.Value)
+			if err != nil {
+				diags.AddAttributeError(path.Root("metrics").AtMapKey("listen"), "Invalid Value", err.Error())
+			}
+
+			m.Listen = types.StringValue(v)
 
 		case "stats.path":
-			m.Path = types.StringValue(o.Value.(string))
+			v, err := convert[string](o.Value)
+			if err != nil {
+				diags.AddAttributeError(path.Root("metrics").AtMapKey("path"), "Invalid Value", err.Error())
+			}
+
+			m.Path = types.StringValue(v)
 
 		case "stats.namespace":
-			m.Namespace = types.StringValue(o.Value.(string))
+			v, err := convert[string](o.Value)
+			if err != nil {
+				diags.AddAttributeError(path.Root("metrics").AtMapKey("namespace"), "Invalid Value", err.Error())
+			}
+
+			m.Namespace = types.StringValue(v)
 
 		case "stats.subsystem":
-			m.Subsystem = types.StringValue(o.Value.(string))
+			v, err := convert[string](o.Value)
+			if err != nil {
+				diags.AddAttributeError(path.Root("metrics").AtMapKey("subsystem"), "Invalid Value", err.Error())
+			}
+
+			m.Subsystem = types.StringValue(v)
 
 		case "stats.message_metrics":
-			m.EnableExtraMetrics = types.BoolValue(o.Value.(bool))
+			v, err := convert[bool](o.Value)
+			if err != nil {
+				diags.AddAttributeError(path.Root("metrics").AtMapKey("enable_extra_metrics"), "Invalid Value", err.Error())
+			}
+
+			m.EnableExtraMetrics = types.BoolValue(v)
 		}
 
 		return m
@@ -90,4 +116,13 @@ func (s *State) ApplyHost(ctx context.Context, host *definednet.Host) (diags dia
 	}
 
 	return diags
+}
+
+func convert[T any](val any) (T, error) {
+	if val, ok := val.(T); ok {
+		return val, nil
+	}
+
+	var t T
+	return t, fmt.Errorf("unexpected type: wanted %T, got %T", t, val)
 }
