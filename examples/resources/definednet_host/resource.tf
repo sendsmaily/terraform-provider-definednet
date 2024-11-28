@@ -13,3 +13,30 @@ resource "definednet_host" "example" {
   role_id    = "role-WSG78880Z655TQJVQFL5CZ405B"
   tags       = ["service:app"]
 }
+
+resource "definednet_host" "metrics_minimal" {
+  name       = "example.defined.test"
+  network_id = "network-7P81MCS2TVAY9XJWQTNJ3PWYPD"
+  role_id    = "role-WSG78880Z655TQJVQFL5CZ405B"
+  tags       = ["service:app"]
+
+  metrics {
+    enabled = true
+  }
+}
+
+resource "definednet_host" "metrics" {
+  name       = "example.defined.test"
+  network_id = "network-7P81MCS2TVAY9XJWQTNJ3PWYPD"
+  role_id    = "role-WSG78880Z655TQJVQFL5CZ405B"
+  tags       = ["service:app"]
+
+  metrics {
+    enabled              = true
+    listen               = "127.0.0.1:9100"
+    path                 = "/-/metrics"
+    namespace            = "infra"
+    subsystem            = "nebula"
+    enable_extra_metrics = true
+  }
+}
