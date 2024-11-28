@@ -1,15 +1,23 @@
 # Custom Dictionary Words
+boolplanmodifier
 definednet
 dnclient
 ghttp
 gomega
 gstruct
 knownvalue
+listvalidator
 onsi
 plancheck
+planmodifier
 providerserver
 samber
 sendsmaily
 statecheck
+stringdefault
+stringplanmodifier
+stringvalidator
 tfjsonpath
+tflog
 tfprotov
+tfsdk
