@@ -201,3 +201,108 @@ var _ = DescribeTable("host resource management",
 		},
 	),
 )
+
+var _ = DescribeTable("host metrics exporter configuration management",
+	func(steps ...resource.TestStep) {
+		resource.Test(GinkgoT(), resource.TestCase{
+			Steps: lo.Map(steps, func(step resource.TestStep, _ int) resource.TestStep {
+				step.ProtoV6ProviderFactories = map[string]func() (tfprotov6.ProviderServer, error){
+					"definednet": providerserver.NewProtocol6WithError(providerFactory()),
+				}
+
+				return step
+			}),
+		})
+	},
+	Entry("assert enabling metrics configures default metrics exporter",
+		resource.TestStep{
+			ConfigFile: config.StaticFile("testdata/host_metrics_defaults.tf"),
+			ConfigStateChecks: []statecheck.StateCheck{
+				statecheck.ExpectKnownValue("definednet_host.metrics_default_test", tfjsonpath.New("metrics").AtMapKey("listen"), knownvalue.StringExact("127.0.0.1:8080")),
+				statecheck.ExpectKnownValue("definednet_host.metrics_default_test", tfjsonpath.New("metrics").AtMapKey("path"), knownvalue.StringExact("/metrics")),
+				statecheck.ExpectKnownValue("definednet_host.metrics_default_test", tfjsonpath.New("metrics").AtMapKey("namespace"), knownvalue.StringExact("nebula")),
+				statecheck.ExpectKnownValue("definednet_host.metrics_default_test", tfjsonpath.New("metrics").AtMapKey("subsystem"), knownvalue.StringExact("host")),
+				statecheck.ExpectKnownValue("definednet_host.metrics_default_test", tfjsonpath.New("metrics").AtMapKey("enable_extra_metrics"), knownvalue.Bool(false)),
+			},
+		},
+	),
+	Entry("assert metrics exporter is configurable",
+		resource.TestStep{
+			ConfigFile: config.StaticFile("testdata/host_metrics.tf"),
+			ConfigVariables: config.Variables{
+				"metrics_listen":       config.StringVariable("100.64.0.1:9100"),
+				"metrics_path":         config.StringVariable("/-/metrics"),
+				"metrics_namespace":    config.StringVariable("test"),
+				"metrics_subsystem":    config.StringVariable("configurable_host"),
+				"metrics_enable_extra": config.BoolVariable(true),
+			},
+			ConfigStateChecks: []statecheck.StateCheck{
+				statecheck.ExpectKnownValue("definednet_host.metrics_test", tfjsonpath.New("metrics").AtMapKey("listen"), knownvalue.StringExact("100.64.0.1:9100")),
+				statecheck.ExpectKnownValue("definednet_host.metrics_test", tfjsonpath.New("metrics").AtMapKey("path"), knownvalue.StringExact("/-/metrics")),
+				statecheck.ExpectKnownValue("definednet_host.metrics_test", tfjsonpath.New("metrics").AtMapKey("namespace"), knownvalue.StringExact("test")),
+				statecheck.ExpectKnownValue("definednet_host.metrics_test", tfjsonpath.New("metrics").AtMapKey("subsystem"), knownvalue.StringExact("configurable_host")),
+				statecheck.ExpectKnownValue("definednet_host.metrics_test", tfjsonpath.New("metrics").AtMapKey("enable_extra_metrics"), knownvalue.Bool(true)),
+			},
+		},
+	),
+	Entry("assert metrics configuration updates are executed in-place",
+		resource.TestStep{
+			ConfigFile: config.StaticFile("testdata/host_metrics.tf"),
+			ConfigVariables: config.Variables{
+				"metrics_listen":       config.StringVariable("127.0.0.1:8080"),
+				"metrics_path":         config.StringVariable("/metrics"),
+				"metrics_namespace":    config.StringVariable("nebula"),
+				"metrics_subsystem":    config.StringVariable("host"),
+				"metrics_enable_extra": config.BoolVariable(false),
+			},
+		},
+		resource.TestStep{
+			ConfigFile: config.StaticFile("testdata/host_metrics.tf"),
+			ConfigVariables: config.Variables{
+				"metrics_listen":       config.StringVariable("100.64.0.1:9100"),
+				"metrics_path":         config.StringVariable("/-/metrics"),
+				"metrics_namespace":    config.StringVariable("test"),
+				"metrics_subsystem":    config.StringVariable("configurable_host"),
+				"metrics_enable_extra": config.BoolVariable(true),
+			},
+			ConfigPlanChecks: resource.ConfigPlanChecks{
+				PreApply: []plancheck.PlanCheck{
+					plancheck.ExpectResourceAction("definednet_host.metrics_test", plancheck.ResourceActionUpdate),
+				},
+			},
+			ConfigStateChecks: []statecheck.StateCheck{
+				statecheck.ExpectKnownValue("definednet_host.metrics_test", tfjsonpath.New("metrics").AtMapKey("listen"), knownvalue.StringExact("100.64.0.1:9100")),
+				statecheck.ExpectKnownValue("definednet_host.metrics_test", tfjsonpath.New("metrics").AtMapKey("path"), knownvalue.StringExact("/-/metrics")),
+				statecheck.ExpectKnownValue("definednet_host.metrics_test", tfjsonpath.New("metrics").AtMapKey("namespace"), knownvalue.StringExact("test")),
+				statecheck.ExpectKnownValue("definednet_host.metrics_test", tfjsonpath.New("metrics").AtMapKey("subsystem"), knownvalue.StringExact("configurable_host")),
+				statecheck.ExpectKnownValue("definednet_host.metrics_test", tfjsonpath.New("metrics").AtMapKey("enable_extra_metrics"), knownvalue.Bool(true)),
+			},
+		},
+	),
+	Entry("assert host import populates metrics configuration",
+		resource.TestStep{
+			ConfigFile: config.StaticFile("testdata/host_metrics.tf"),
+			ConfigVariables: config.Variables{
+				"metrics_listen":       config.StringVariable("100.64.0.1:9100"),
+				"metrics_path":         config.StringVariable("/-/metrics"),
+				"metrics_namespace":    config.StringVariable("test"),
+				"metrics_subsystem":    config.StringVariable("configurable_host"),
+				"metrics_enable_extra": config.BoolVariable(true),
+			},
+		},
+		resource.TestStep{
+			ConfigFile: config.StaticFile("testdata/host_metrics.tf"),
+			ConfigVariables: config.Variables{
+				"metrics_listen":       config.StringVariable("100.64.0.1:9100"),
+				"metrics_path":         config.StringVariable("/-/metrics"),
+				"metrics_namespace":    config.StringVariable("test"),
+				"metrics_subsystem":    config.StringVariable("configurable_host"),
+				"metrics_enable_extra": config.BoolVariable(true),
+			},
+			ResourceName:            "definednet_host.metrics_test",
+			ImportState:             true,
+			ImportStateVerify:       true,
+			ImportStateVerifyIgnore: []string{"enrollment_code"},
+		},
+	),
+)
