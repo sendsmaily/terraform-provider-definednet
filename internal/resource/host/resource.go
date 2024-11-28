@@ -86,6 +86,7 @@ func (r *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 				{Key: "stats.namespace", Value: state.Metrics.Namespace.ValueString()},
 				{Key: "stats.subsystem", Value: state.Metrics.Subsystem.ValueString()},
 				{Key: "stats.message_metrics", Value: state.Metrics.EnableExtraMetrics.ValueBool()},
+				{Key: "stats.interval", Value: "60s"},
 			}
 		}(),
 	})
@@ -195,6 +196,7 @@ func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp 
 				{Key: "stats.namespace", Value: state.Metrics.Namespace.ValueString()},
 				{Key: "stats.subsystem", Value: state.Metrics.Subsystem.ValueString()},
 				{Key: "stats.message_metrics", Value: state.Metrics.EnableExtraMetrics.ValueBool()},
+				{Key: "stats.interval", Value: "60s"},
 			}
 		}(),
 	})
