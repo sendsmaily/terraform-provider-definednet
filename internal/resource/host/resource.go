@@ -7,6 +7,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
+	"github.com/samber/lo"
 	"github.com/sendsmaily/terraform-provider-definednet/internal/definednet"
 )
 
@@ -73,6 +74,20 @@ func (r *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 		IsLighthouse:    false,
 		IsRelay:         false,
 		Tags:            tags,
+		ConfigOverrides: func() []definednet.ConfigOverride {
+			if lo.IsNil(state.Metrics) || !state.Metrics.Enabled.ValueBool() {
+				return nil
+			}
+
+			return []definednet.ConfigOverride{
+				{Key: "stats.type", Value: "prometheus"},
+				{Key: "stats.listen", Value: state.Metrics.Listen.ValueString()},
+				{Key: "stats.path", Value: state.Metrics.Path.ValueString()},
+				{Key: "stats.namespace", Value: state.Metrics.Namespace.ValueString()},
+				{Key: "stats.subsystem", Value: state.Metrics.Subsystem.ValueString()},
+				{Key: "stats.message_metrics", Value: state.Metrics.EnableExtraMetrics.ValueBool()},
+			}
+		}(),
 	})
 
 	if err != nil {
@@ -168,6 +183,20 @@ func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp 
 		StaticAddresses: []string{},
 		ListenPort:      0,
 		Tags:            tags,
+		ConfigOverrides: func() []definednet.ConfigOverride {
+			if lo.IsNil(state.Metrics) || !state.Metrics.Enabled.ValueBool() {
+				return nil
+			}
+
+			return []definednet.ConfigOverride{
+				{Key: "stats.type", Value: "prometheus"},
+				{Key: "stats.listen", Value: state.Metrics.Listen.ValueString()},
+				{Key: "stats.path", Value: state.Metrics.Path.ValueString()},
+				{Key: "stats.namespace", Value: state.Metrics.Namespace.ValueString()},
+				{Key: "stats.subsystem", Value: state.Metrics.Subsystem.ValueString()},
+				{Key: "stats.message_metrics", Value: state.Metrics.EnableExtraMetrics.ValueBool()},
+			}
+		}(),
 	})
 
 	if err != nil {
