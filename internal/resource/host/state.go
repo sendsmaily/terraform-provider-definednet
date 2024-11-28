@@ -35,13 +35,12 @@ func (s *State) ApplyHost(ctx context.Context, host *definednet.Host) (diags dia
 	s.Name = types.StringValue(host.Name)
 	s.NetworkID = types.StringValue(host.NetworkID)
 
-	if !lo.IsEmpty(host.RoleID) {
+	s.RoleID = types.StringNull()
+	if lo.IsNotEmpty(host.RoleID) {
 		s.RoleID = types.StringValue(host.RoleID)
 	}
 
-	if len(host.Tags) > 0 {
-		s.Tags, diags = types.ListValueFrom(ctx, types.StringType, host.Tags)
-	}
+	s.Tags, diags = types.ListValueFrom(ctx, types.StringType, host.Tags)
 
 	return diags
 }
