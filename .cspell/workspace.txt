@@ -1,2 +1,15 @@
 # Custom Dictionary Words
 definednet
+dnclient
+ghttp
+gomega
+gstruct
+knownvalue
+onsi
+plancheck
+providerserver
+samber
+sendsmaily
+statecheck
+tfjsonpath
+tfprotov
