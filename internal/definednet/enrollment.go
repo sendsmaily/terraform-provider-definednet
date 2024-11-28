@@ -32,7 +32,7 @@ func CreateEnrollment(ctx context.Context, client Client, req CreateEnrollmentRe
 // CreateEnrollmentRequest is a request data model for CreateEnrollment endpoint.
 type CreateEnrollmentRequest struct {
 	NetworkID       string           `json:"networkID"`
-	RoleID          string           `json:"roleID"`
+	RoleID          string           `json:"roleID,omitempty"`
 	Name            string           `json:"name"`
 	StaticAddresses []string         `json:"staticAddresses"`
 	ListenPort      int              `json:"listenPort"`

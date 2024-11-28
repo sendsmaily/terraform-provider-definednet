@@ -40,7 +40,10 @@ func (s *State) ApplyHost(ctx context.Context, host *definednet.Host) (diags dia
 		s.RoleID = types.StringValue(host.RoleID)
 	}
 
-	s.Tags, diags = types.ListValueFrom(ctx, types.StringType, host.Tags)
+	s.Tags = types.ListNull(types.StringType)
+	if len(host.Tags) > 0 {
+		s.Tags, diags = types.ListValueFrom(ctx, types.StringType, host.Tags)
+	}
 
 	return diags
 }

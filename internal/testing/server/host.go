@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/samber/lo"
 	"github.com/sendsmaily/terraform-provider-definednet/internal/definednet"
 )
 
@@ -48,8 +49,16 @@ func (s *Server) updateHost(w http.ResponseWriter, r *http.Request) {
 	state.Host.RoleID = req.RoleID
 	state.Host.StaticAddresses = req.StaticAddresses
 	state.Host.ListenPort = req.ListenPort
-	state.Host.Tags = req.Tags
-	state.Host.ConfigOverrides = req.ConfigOverrides
+
+	state.Host.Tags = []string{}
+	if !lo.IsNil(req.Tags) {
+		state.Host.Tags = req.Tags
+	}
+
+	state.Host.ConfigOverrides = []definednet.ConfigOverride{}
+	if !lo.IsNil(req.ConfigOverrides) {
+		state.Host.ConfigOverrides = req.ConfigOverrides
+	}
 
 	if err := s.Hosts.Replace(*state); err != nil {
 		panic(err)
