@@ -121,7 +121,7 @@ var Schema = schema.Schema{
 					Description: "Prometheus metrics' subsystem",
 					Optional:    true,
 					Computed:    true,
-					Default:     stringdefault.StaticString("host"),
+					Default:     stringdefault.StaticString("lighthouse"),
 					PlanModifiers: []planmodifier.String{
 						stringplanmodifier.UseStateForUnknown(),
 					},
