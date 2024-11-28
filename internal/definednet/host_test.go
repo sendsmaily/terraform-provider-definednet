@@ -40,6 +40,12 @@ var _ = Describe("getting hosts", func() {
 			"IsLighthouse":    BeTrue(),
 			"IsRelay":         BeTrue(),
 			"Tags":            HaveExactElements("tag:one", "tag:two"),
+			"ConfigOverrides": HaveExactElements(
+				MatchAllFields(Fields{
+					"Key":   Equal("config.override"),
+					"Value": Equal("value"),
+				}),
+			),
 		})))
 		Expect(server.ReceivedRequests()).NotTo(BeEmpty(), "assert sanity")
 	})
@@ -55,6 +61,12 @@ var _ = Describe("updating hosts", func() {
 				"staticAddresses": []string{"127.0.0.1:8484", "172.16.0.1:8484"},
 				"listenPort":      8484,
 				"tags":            []string{"tag:one", "tag:two"},
+				"configOverrides": []map[string]string{
+					{
+						"key":   "config.override",
+						"value": "value",
+					},
+				},
 			}),
 			ghttp.RespondWithJSONEncoded(http.StatusOK, map[string]any{}),
 		))
@@ -66,6 +78,9 @@ var _ = Describe("updating hosts", func() {
 			StaticAddresses: []string{"127.0.0.1:8484", "172.16.0.1:8484"},
 			ListenPort:      8484,
 			Tags:            []string{"tag:one", "tag:two"},
+			ConfigOverrides: []definednet.ConfigOverride{
+				{Key: "config.override", Value: "value"},
+			},
 		})).Error().NotTo(HaveOccurred())
 		Expect(server.ReceivedRequests()).NotTo(BeEmpty(), "assert sanity")
 	})
@@ -85,6 +100,12 @@ var _ = Describe("updating hosts", func() {
 				"IsLighthouse":    BeTrue(),
 				"IsRelay":         BeTrue(),
 				"Tags":            HaveExactElements("tag:one", "tag:two"),
+				"ConfigOverrides": HaveExactElements(
+					MatchAllFields(Fields{
+						"Key":   Equal("config.override"),
+						"Value": Equal("value"),
+					}),
+				),
 			})))
 
 		Expect(server.ReceivedRequests()).NotTo(BeEmpty(), "assert sanity")
@@ -117,7 +138,10 @@ var hostJSONResponse = `{
       "platform": "dnclient",
       "updateAvailable": false,
       "version": "0.1.9"
-    }
+    },
+	"configOverrides": [
+	  {"key": "config.override", "value": "value"}
+	]
   },
   "metadata": {}
 }`

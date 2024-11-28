@@ -49,6 +49,7 @@ func (s *Server) updateHost(w http.ResponseWriter, r *http.Request) {
 	state.Host.StaticAddresses = req.StaticAddresses
 	state.Host.ListenPort = req.ListenPort
 	state.Host.Tags = req.Tags
+	state.Host.ConfigOverrides = req.ConfigOverrides
 
 	if err := s.Hosts.Replace(*state); err != nil {
 		panic(err)

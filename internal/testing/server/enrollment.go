@@ -28,6 +28,7 @@ func (s *Server) createEnrollment(w http.ResponseWriter, r *http.Request) {
 			IsLighthouse:    req.IsLighthouse,
 			IsRelay:         req.IsRelay,
 			Tags:            req.Tags,
+			ConfigOverrides: req.ConfigOverrides,
 		},
 	}
 
