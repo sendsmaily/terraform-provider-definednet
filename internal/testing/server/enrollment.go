@@ -27,9 +27,17 @@ func (s *Server) createEnrollment(w http.ResponseWriter, r *http.Request) {
 			ListenPort:      req.ListenPort,
 			IsLighthouse:    req.IsLighthouse,
 			IsRelay:         req.IsRelay,
-			Tags:            req.Tags,
-			ConfigOverrides: req.ConfigOverrides,
 		},
+	}
+
+	state.Host.Tags = []string{}
+	if !lo.IsNil(req.Tags) {
+		state.Host.Tags = req.Tags
+	}
+
+	state.Host.ConfigOverrides = []definednet.ConfigOverride{}
+	if !lo.IsNil(req.ConfigOverrides) {
+		state.Host.ConfigOverrides = req.ConfigOverrides
 	}
 
 	if err := s.Hosts.Add(state); err != nil {
