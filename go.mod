@@ -11,7 +11,7 @@ require (
 	github.com/hashicorp/terraform-plugin-testing v1.11.0
 	github.com/onsi/ginkgo/v2 v2.22.2
 	github.com/onsi/gomega v1.36.2
-	github.com/samber/lo v1.49.0
+	github.com/samber/lo v1.49.1
 )
 
 require (
