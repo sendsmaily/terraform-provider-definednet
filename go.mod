@@ -1,7 +1,6 @@
 module github.com/sendsmaily/terraform-provider-definednet
 
-go 1.22.7
-toolchain go1.23.7
+go 1.24
 
 require (
 	github.com/go-chi/chi/v5 v5.2.1
@@ -69,4 +68,8 @@ require (
 	google.golang.org/grpc v1.69.4 // indirect
 	google.golang.org/protobuf v1.36.3 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
+)
+
+tool (
+	github.com/onsi/ginkgo/v2/ginkgo
 )
