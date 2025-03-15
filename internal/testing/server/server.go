@@ -31,6 +31,12 @@ func New() *Server {
 	mux.Get("/v1/hosts/{id}", srv.getHost)
 	mux.Put("/v2/hosts/{id}", srv.updateHost)
 
+	// Roles.
+	mux.Post("/v1/roles", srv.createRole)
+	mux.Delete("/v1/roles/{id}", srv.deleteRole)
+	mux.Get("/v1/roles/{id}", srv.getRole)
+	mux.Put("/v1/roles/{id}", srv.updateRole)
+
 	srv.server = httptest.NewServer(mux)
 
 	return srv
@@ -38,7 +44,9 @@ func New() *Server {
 
 // Server is a fake Defined.net HTTP API server.
 type Server struct {
-	Hosts  *Repository[Host]
+	Hosts *Repository[Host]
+	Roles *Repository[Role]
+
 	server *httptest.Server
 }
 
