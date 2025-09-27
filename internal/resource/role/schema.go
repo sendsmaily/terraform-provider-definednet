@@ -1,0 +1,159 @@
+package role
+
+import (
+	"context"
+	_ "embed"
+
+	"github.com/hashicorp/terraform-plugin-framework-validators/int32validator"
+	"github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
+	"github.com/hashicorp/terraform-plugin-framework-validators/objectvalidator"
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/path"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/sendsmaily/terraform-provider-definednet/internal/validation"
+)
+
+// Schema is the host resource's schema.
+var Schema = schema.Schema{
+	MarkdownDescription: resourceDescription,
+	Attributes: map[string]schema.Attribute{
+		"id": schema.StringAttribute{
+			Description: "Role's ID",
+			Computed:    true,
+			PlanModifiers: []planmodifier.String{
+				stringplanmodifier.UseStateForUnknown(),
+			},
+		},
+		"name": schema.StringAttribute{
+			Description: "Role's name",
+			Required:    true,
+			Validators: []validator.String{
+				stringvalidator.LengthAtMost(50),
+			},
+		},
+		"description": schema.StringAttribute{
+			Description: "Role's description",
+			Optional:    true,
+			Validators: []validator.String{
+				stringvalidator.LengthAtMost(255),
+			},
+		},
+	},
+	Blocks: map[string]schema.Block{
+		"rule": schema.ListNestedBlock{
+			Description: "Role's firewall rule",
+			NestedObject: schema.NestedBlockObject{
+				Attributes: map[string]schema.Attribute{
+					"protocol": schema.StringAttribute{
+						Description: "Network protocol",
+						Required:    true,
+						Validators: []validator.String{
+							stringvalidator.OneOf("ANY", "TCP", "UDP", "ICMP"),
+						},
+					},
+					"description": schema.StringAttribute{
+						Description: "Role's description",
+						Optional:    true,
+						Validators: []validator.String{
+							stringvalidator.LengthAtMost(255),
+						},
+					},
+					"allowed_role_id": schema.StringAttribute{
+						Description: "Allowed role's ID",
+						Optional:    true,
+					},
+					"allowed_tags": schema.ListAttribute{
+						Description: "Allowed hosts' tags",
+						ElementType: types.StringType,
+						Optional:    true,
+						Validators: []validator.List{
+							listvalidator.UniqueValues(),
+							listvalidator.ValueStringsAre(validation.HostTag()),
+						},
+					},
+					"port": schema.Int32Attribute{
+						Description: "Allowed port",
+						Optional:    true,
+						Validators: []validator.Int32{
+							int32validator.Between(1, 65535),
+						},
+					},
+					"port_range": schema.ObjectAttribute{
+						Description: "Allowed port range",
+						Optional:    true,
+						AttributeTypes: map[string]attr.Type{
+							"from": types.Int32Type,
+							"to":   types.Int32Type,
+						},
+						Validators: []validator.Object{
+							objectvalidator.AlsoRequires(
+								path.MatchRelative().AtName("from"),
+								path.MatchRelative().AtName("to"),
+							),
+							&portRangeValidator{},
+						},
+					},
+				},
+				Validators: []validator.Object{
+					objectvalidator.AtLeastOneOf(
+						path.MatchRelative().AtName("allowed_role_id"),
+						path.MatchRelative().AtName("allowed_tags"),
+					),
+					objectvalidator.AtLeastOneOf(
+						path.MatchRelative().AtName("port"),
+						path.MatchRelative().AtName("port_range"),
+					),
+				},
+			},
+		},
+	},
+}
+
+//go:embed docs/resource.md
+var resourceDescription string
+
+type portRangeValidator struct{}
+
+var _ validator.Object = (*portRangeValidator)(nil)
+
+func (v *portRangeValidator) Description(context.Context) string {
+	return ""
+}
+
+func (v *portRangeValidator) MarkdownDescription(context.Context) string {
+	return ""
+}
+
+func (v *portRangeValidator) ValidateObject(ctx context.Context, req validator.ObjectRequest, resp *validator.ObjectResponse) {
+	val, d := req.ConfigValue.ToObjectValue(ctx)
+	resp.Diagnostics.Append(d...)
+
+	if val.IsNull() {
+		return
+	}
+
+	attrs := val.Attributes()
+	from := attrs["from"].(types.Int32).ValueInt32()
+	to := attrs["to"].(types.Int32).ValueInt32()
+
+	if from < 1 {
+		resp.Diagnostics.AddAttributeError(req.Path.AtName("from"), "Invalid Value", "Port must be >= 1")
+	} else if from > 65535 {
+		resp.Diagnostics.AddAttributeError(req.Path.AtName("from"), "Invalid Value", "Port must be <= 65535")
+	}
+
+	if to < 1 {
+		resp.Diagnostics.AddAttributeError(req.Path.AtName("to"), "Invalid Value", "Port must be >= 1")
+	} else if to > 65535 {
+		resp.Diagnostics.AddAttributeError(req.Path.AtName("to"), "Invalid Value", "Port must be <= 65535")
+	}
+
+	if to <= from {
+		resp.Diagnostics.AddAttributeError(req.Path, "Invalid Value", "To port must be greater than from port")
+	}
+}

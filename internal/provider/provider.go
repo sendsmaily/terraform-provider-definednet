@@ -11,6 +11,7 @@ import (
 	"github.com/sendsmaily/terraform-provider-definednet/internal/definednet"
 	"github.com/sendsmaily/terraform-provider-definednet/internal/resource/host"
 	"github.com/sendsmaily/terraform-provider-definednet/internal/resource/lighthouse"
+	"github.com/sendsmaily/terraform-provider-definednet/internal/resource/role"
 )
 
 const (
@@ -79,6 +80,7 @@ func (p *Provider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
 		lighthouse.NewResource,
 		host.NewResource,
+		role.NewResource,
 	}
 }
 

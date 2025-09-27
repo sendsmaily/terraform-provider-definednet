@@ -1,12 +1,15 @@
 # Custom Dictionary Words
+basetypes
 boolplanmodifier
 definednet
 dnclient
+fakeserver
 ghttp
 gomega
 gstruct
 knownvalue
 listvalidator
+objectvalidator
 onsi
 plancheck
 planmodifier
@@ -20,4 +23,7 @@ stringvalidator
 tfjsonpath
 tflog
 tfprotov
+tfprovider
 tfsdk
+unconfigured
+validatordiag
