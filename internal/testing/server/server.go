@@ -23,6 +23,7 @@ func New() *Server {
 
 	srv := &Server{
 		Hosts: NewRepository[Host](),
+		Roles: NewRepository[Role](),
 	}
 
 	// Hosts.
