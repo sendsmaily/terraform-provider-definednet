@@ -3,6 +3,7 @@ basetypes
 boolplanmodifier
 definednet
 dnclient
+fakeserver
 ghttp
 gomega
 gstruct
@@ -22,5 +23,7 @@ stringvalidator
 tfjsonpath
 tflog
 tfprotov
+tfprovider
 tfsdk
+unconfigured
 validatordiag
