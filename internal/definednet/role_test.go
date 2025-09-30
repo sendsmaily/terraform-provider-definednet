@@ -39,6 +39,13 @@ var _ = Describe("creating roles", func() {
 							"to":   65535,
 						},
 					},
+					{
+						"protocol":    "ANY",
+						"description": "Allow all ports",
+						"allowedTags": []string{
+							"tag:superuser",
+						},
+					},
 				},
 			}),
 			ghttp.RespondWithJSONEncoded(http.StatusOK, map[string]any{}),
@@ -52,7 +59,7 @@ var _ = Describe("creating roles", func() {
 					Protocol:      "TCP",
 					Description:   "Allow SSH access",
 					AllowedRoleID: "allowed-role-id",
-					PortRange: definednet.PortRange{
+					PortRange: &definednet.PortRange{
 						From: 22,
 						To:   22,
 					},
@@ -64,9 +71,16 @@ var _ = Describe("creating roles", func() {
 						"tag:one",
 						"tag:two",
 					},
-					PortRange: definednet.PortRange{
+					PortRange: &definednet.PortRange{
 						From: 32768,
 						To:   65535,
+					},
+				},
+				{
+					Protocol:    "ANY",
+					Description: "Allow all ports",
+					AllowedTags: []string{
+						"tag:superuser",
 					},
 				},
 			},
@@ -104,10 +118,10 @@ var _ = Describe("getting roles", func() {
 						"Description":   Equal("Allow SSH access"),
 						"AllowedRoleID": Equal("allowed-role-id"),
 						"AllowedTags":   BeEmpty(),
-						"PortRange": MatchAllFields(Fields{
+						"PortRange": PointTo(MatchAllFields(Fields{
 							"From": Equal(22),
 							"To":   Equal(22),
-						}),
+						})),
 					}),
 					MatchAllFields(Fields{
 						"Protocol":      Equal("ANY"),
@@ -117,10 +131,19 @@ var _ = Describe("getting roles", func() {
 							"tag:one",
 							"tag:two",
 						),
-						"PortRange": MatchAllFields(Fields{
+						"PortRange": PointTo(MatchAllFields(Fields{
 							"From": Equal(32768),
 							"To":   Equal(65535),
-						}),
+						})),
+					}),
+					MatchAllFields(Fields{
+						"Protocol":      Equal("ANY"),
+						"Description":   Equal("Allow all ports"),
+						"AllowedRoleID": BeEmpty(),
+						"AllowedTags": HaveExactElements(
+							"tag:superuser",
+						),
+						"PortRange": BeNil(),
 					}),
 				),
 			})))
@@ -158,6 +181,13 @@ var _ = Describe("updating roles", func() {
 							"to":   65535,
 						},
 					},
+					{
+						"protocol":    "ANY",
+						"description": "Allow all ports",
+						"allowedTags": []string{
+							"tag:superuser",
+						},
+					},
 				},
 			}),
 			ghttp.RespondWithJSONEncoded(http.StatusOK, map[string]any{}),
@@ -172,7 +202,7 @@ var _ = Describe("updating roles", func() {
 					Protocol:      "TCP",
 					Description:   "Allow SSH access",
 					AllowedRoleID: "allowed-role-id",
-					PortRange: definednet.PortRange{
+					PortRange: &definednet.PortRange{
 						From: 22,
 						To:   22,
 					},
@@ -184,9 +214,16 @@ var _ = Describe("updating roles", func() {
 						"tag:one",
 						"tag:two",
 					},
-					PortRange: definednet.PortRange{
+					PortRange: &definednet.PortRange{
 						From: 32768,
 						To:   65535,
+					},
+				},
+				{
+					Protocol:    "ANY",
+					Description: "Allow all ports",
+					AllowedTags: []string{
+						"tag:superuser",
 					},
 				},
 			},
@@ -208,10 +245,10 @@ var _ = Describe("updating roles", func() {
 						"Description":   Equal("Allow SSH access"),
 						"AllowedRoleID": Equal("allowed-role-id"),
 						"AllowedTags":   BeEmpty(),
-						"PortRange": MatchAllFields(Fields{
+						"PortRange": PointTo(MatchAllFields(Fields{
 							"From": Equal(22),
 							"To":   Equal(22),
-						}),
+						})),
 					}),
 					MatchAllFields(Fields{
 						"Protocol":      Equal("ANY"),
@@ -221,10 +258,19 @@ var _ = Describe("updating roles", func() {
 							"tag:one",
 							"tag:two",
 						),
-						"PortRange": MatchAllFields(Fields{
+						"PortRange": PointTo(MatchAllFields(Fields{
 							"From": Equal(32768),
 							"To":   Equal(65535),
-						}),
+						})),
+					}),
+					MatchAllFields(Fields{
+						"Protocol":      Equal("ANY"),
+						"Description":   Equal("Allow all ports"),
+						"AllowedRoleID": BeEmpty(),
+						"AllowedTags": HaveExactElements(
+							"tag:superuser",
+						),
+						"PortRange": BeNil(),
 					}),
 				),
 			})))
@@ -261,6 +307,13 @@ var roleJSONResponse = `{
           "from": 32768,
           "to": 65535
         }
+      },
+      {
+        "protocol": "ANY",
+        "description": "Allow all ports",
+        "allowedTags": [
+          "tag:superuser"
+        ]
       }
     ]
   },

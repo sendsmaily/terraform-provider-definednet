@@ -512,3 +512,192 @@ var _ = DescribeTable("port range-based firewall management",
 		},
 	),
 )
+
+var _ = DescribeTable("any port firewall management",
+	func(steps ...resource.TestStep) {
+		resource.Test(GinkgoT(), resource.TestCase{
+			Steps: lo.Map(steps, func(step resource.TestStep, _ int) resource.TestStep {
+				step.ProtoV6ProviderFactories = map[string]func() (tfprotov6.ProviderServer, error){
+					"definednet": providerserver.NewProtocol6WithError(providerFactory()),
+				}
+
+				return step
+			}),
+		})
+	},
+	Entry("assert roles with any port rules can be created",
+		resource.TestStep{
+			ConfigFile: config.StaticFile("testdata/role_any_port.tf"),
+			ConfigVariables: config.Variables{
+				"name":        config.StringVariable("test: Role"),
+				"description": config.StringVariable("Role's description"),
+				"rules": config.SetVariable(
+					config.ObjectVariable(map[string]config.Variable{
+						"protocol":        config.StringVariable("TCP"),
+						"description":     config.StringVariable("SSH access"),
+						"allowed_role_id": config.StringVariable("role:abcdef"),
+						"allowed_tags": config.SetVariable(
+							config.StringVariable("tag:one"),
+							config.StringVariable("tag:two"),
+						),
+					}),
+					config.ObjectVariable(map[string]config.Variable{
+						"protocol":        config.StringVariable("TCP"),
+						"description":     config.StringVariable("HTTPS access"),
+						"allowed_role_id": config.StringVariable("role:123456"),
+						"allowed_tags": config.SetVariable(
+							config.StringVariable("tag:https_one"),
+							config.StringVariable("tag:https_two"),
+						),
+					}),
+				),
+			},
+			ConfigPlanChecks: resource.ConfigPlanChecks{
+				PreApply: []plancheck.PlanCheck{
+					// Assert sanity.
+					plancheck.ExpectResourceAction("definednet_role.test", plancheck.ResourceActionCreate),
+				},
+			},
+			ConfigStateChecks: []statecheck.StateCheck{
+				statecheck.ExpectKnownValue(
+					"definednet_role.test",
+					tfjsonpath.New("rule"),
+					knownvalue.SetExact([]knownvalue.Check{
+						knownvalue.ObjectExact(map[string]knownvalue.Check{
+							"port":            knownvalue.Null(),
+							"port_range":      knownvalue.Null(),
+							"protocol":        knownvalue.StringExact("TCP"),
+							"description":     knownvalue.StringExact("SSH access"),
+							"allowed_role_id": knownvalue.StringExact("role:abcdef"),
+							"allowed_tags": knownvalue.SetExact([]knownvalue.Check{
+								knownvalue.StringExact("tag:one"),
+								knownvalue.StringExact("tag:two"),
+							}),
+						}),
+						knownvalue.ObjectExact(map[string]knownvalue.Check{
+							"port":            knownvalue.Null(),
+							"port_range":      knownvalue.Null(),
+							"protocol":        knownvalue.StringExact("TCP"),
+							"description":     knownvalue.StringExact("HTTPS access"),
+							"allowed_role_id": knownvalue.StringExact("role:123456"),
+							"allowed_tags": knownvalue.SetExact([]knownvalue.Check{
+								knownvalue.StringExact("tag:https_one"),
+								knownvalue.StringExact("tag:https_two"),
+							}),
+						}),
+					}),
+				),
+			},
+		},
+	),
+	Entry("assert roles with any port rules can be updated",
+		resource.TestStep{
+			ConfigFile: config.StaticFile("testdata/role_any_port.tf"),
+			ConfigVariables: config.Variables{
+				"name":        config.StringVariable("test: Role"),
+				"description": config.StringVariable("Role's description"),
+			},
+		},
+		resource.TestStep{
+			ConfigFile: config.StaticFile("testdata/role_any_port.tf"),
+			ConfigVariables: config.Variables{
+				"name":        config.StringVariable("test: Role"),
+				"description": config.StringVariable("Role's description"),
+				"rules": config.SetVariable(
+					config.ObjectVariable(map[string]config.Variable{
+						"protocol":        config.StringVariable("TCP"),
+						"description":     config.StringVariable("SSH access"),
+						"allowed_role_id": config.StringVariable("role:abcdef"),
+						"allowed_tags": config.SetVariable(
+							config.StringVariable("tag:one"),
+							config.StringVariable("tag:two"),
+						),
+					}),
+					config.ObjectVariable(map[string]config.Variable{
+						"protocol":        config.StringVariable("TCP"),
+						"description":     config.StringVariable("HTTPS access"),
+						"allowed_role_id": config.StringVariable("role:123456"),
+						"allowed_tags": config.SetVariable(
+							config.StringVariable("tag:https_one"),
+							config.StringVariable("tag:https_two"),
+						),
+					}),
+				),
+			},
+			ConfigPlanChecks: resource.ConfigPlanChecks{
+				PreApply: []plancheck.PlanCheck{
+					// Assert sanity.
+					plancheck.ExpectResourceAction("definednet_role.test", plancheck.ResourceActionUpdate),
+				},
+			},
+			ConfigStateChecks: []statecheck.StateCheck{
+				statecheck.ExpectKnownValue(
+					"definednet_role.test",
+					tfjsonpath.New("rule"),
+					knownvalue.SetExact([]knownvalue.Check{
+						knownvalue.ObjectExact(map[string]knownvalue.Check{
+							"port":            knownvalue.Null(),
+							"port_range":      knownvalue.Null(),
+							"protocol":        knownvalue.StringExact("TCP"),
+							"description":     knownvalue.StringExact("SSH access"),
+							"allowed_role_id": knownvalue.StringExact("role:abcdef"),
+							"allowed_tags": knownvalue.SetExact([]knownvalue.Check{
+								knownvalue.StringExact("tag:one"),
+								knownvalue.StringExact("tag:two"),
+							}),
+						}),
+						knownvalue.ObjectExact(map[string]knownvalue.Check{
+							"port":            knownvalue.Null(),
+							"port_range":      knownvalue.Null(),
+							"protocol":        knownvalue.StringExact("TCP"),
+							"description":     knownvalue.StringExact("HTTPS access"),
+							"allowed_role_id": knownvalue.StringExact("role:123456"),
+							"allowed_tags": knownvalue.SetExact([]knownvalue.Check{
+								knownvalue.StringExact("tag:https_one"),
+								knownvalue.StringExact("tag:https_two"),
+							}),
+						}),
+					}),
+				),
+			},
+		},
+	),
+	Entry("assert importing the role populates the state",
+		resource.TestStep{
+			ConfigFile: config.StaticFile("testdata/role_any_port.tf"),
+			ConfigVariables: config.Variables{
+				"name":        config.StringVariable("test: Role"),
+				"description": config.StringVariable("Role's description"),
+				"rules": config.SetVariable(
+					config.ObjectVariable(map[string]config.Variable{
+						"protocol":        config.StringVariable("TCP"),
+						"description":     config.StringVariable("SSH access"),
+						"allowed_role_id": config.StringVariable("role:abcdef"),
+						"allowed_tags": config.SetVariable(
+							config.StringVariable("tag:one"),
+							config.StringVariable("tag:two"),
+						),
+					}),
+					config.ObjectVariable(map[string]config.Variable{
+						"protocol":        config.StringVariable("TCP"),
+						"description":     config.StringVariable("HTTPS access"),
+						"allowed_role_id": config.StringVariable("role:123456"),
+						"allowed_tags": config.SetVariable(
+							config.StringVariable("tag:https_one"),
+							config.StringVariable("tag:https_two"),
+						),
+					}),
+				),
+			},
+		},
+		resource.TestStep{
+			ConfigFile: config.StaticFile("testdata/role_any_port.tf"),
+			ConfigVariables: config.Variables{
+				"name": config.StringVariable("test: Role"),
+			},
+			ResourceName:      "definednet_role.test",
+			ImportState:       true,
+			ImportStateVerify: true,
+		},
+	),
+)

@@ -43,14 +43,23 @@ func (s *State) Apply(ctx context.Context, role *definednet.Role) (diags diag.Di
 		r.Protocol = types.StringValue(rule.Protocol)
 		r.Description = lo.If(lo.IsNotEmpty(rule.Description), types.StringValue(rule.Description)).Else(types.StringNull())
 		r.AllowedRoleID = lo.If(lo.IsNotEmpty(rule.AllowedRoleID), types.StringValue(rule.AllowedRoleID)).Else(types.StringNull())
+
 		r.AllowedTags = func() basetypes.SetValue {
 			tags, d := types.SetValueFrom(ctx, types.StringType, rule.AllowedTags)
 			diags = append(diags, d...)
 			return tags
 		}()
-		r.Port = lo.If(rule.PortRange.From == rule.PortRange.To, types.Int32Value(int32(rule.PortRange.From))).Else(types.Int32Null())
+
+		r.Port = func() types.Int32 {
+			if lo.IsNil(rule.PortRange) || rule.PortRange.From != rule.PortRange.To {
+				return types.Int32Null()
+			}
+
+			return types.Int32Value(int32(rule.PortRange.From))
+		}()
+
 		r.PortRange = func() *FirewallPortRange {
-			if rule.PortRange.From == rule.PortRange.To {
+			if lo.IsNil(rule.PortRange) || rule.PortRange.From == rule.PortRange.To {
 				return nil
 			}
 

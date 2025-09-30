@@ -106,10 +106,6 @@ var Schema = schema.Schema{
 						path.MatchRelative().AtName("allowed_role_id"),
 						path.MatchRelative().AtName("allowed_tags"),
 					),
-					objectvalidator.AtLeastOneOf(
-						path.MatchRelative().AtName("port"),
-						path.MatchRelative().AtName("port_range"),
-					),
 				},
 			},
 		},
