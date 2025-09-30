@@ -48,7 +48,7 @@ var Schema = schema.Schema{
 			NestedObject: schema.NestedBlockObject{
 				Attributes: map[string]schema.Attribute{
 					"protocol": schema.StringAttribute{
-						Description: "Network protocol",
+						Description: "Network protocol. One of `ANY`, `TCP`, `UDP`, or `ICMP`.",
 						Required:    true,
 						Validators: []validator.String{
 							stringvalidator.OneOf("ANY", "TCP", "UDP", "ICMP"),
