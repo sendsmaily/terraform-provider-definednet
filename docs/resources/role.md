@@ -43,7 +43,7 @@ The Defined.net API token must be configured with the following scope:
 
 Required:
 
-- `protocol` (String) Network protocol
+- `protocol` (String) Network protocol. One of `ANY`, `TCP`, `UDP`, or `ICMP`.
 
 Optional:
 
