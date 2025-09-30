@@ -16,11 +16,11 @@ type (
 
 	// FirewallRule is a data model for Defined.net role's firewall rule.
 	FirewallRule struct {
-		Protocol      string    `json:"protocol"`
-		Description   string    `json:"description"`
-		AllowedRoleID string    `json:"allowedRoleID,omitempty"`
-		AllowedTags   []string  `json:"allowedTags,omitempty"`
-		PortRange     PortRange `json:"portRange"`
+		Protocol      string     `json:"protocol"`
+		Description   string     `json:"description"`
+		AllowedRoleID string     `json:"allowedRoleID,omitempty"`
+		AllowedTags   []string   `json:"allowedTags,omitempty"`
+		PortRange     *PortRange `json:"portRange,omitempty"`
 	}
 
 	// PortRange is a data model for Defined.net role firewall rule's port range.

@@ -68,12 +68,12 @@ func (r *Resource) Create(ctx context.Context, req resource.CreateRequest, resp 
 			out.AllowedRoleID = rule.AllowedRoleID.ValueString()
 
 			if lo.IsNotNil(rule.PortRange) {
-				out.PortRange = definednet.PortRange{
+				out.PortRange = &definednet.PortRange{
 					From: int(rule.PortRange.From.ValueInt32()),
 					To:   int(rule.PortRange.To.ValueInt32()),
 				}
-			} else {
-				out.PortRange = definednet.PortRange{
+			} else if !rule.Port.IsNull() {
+				out.PortRange = &definednet.PortRange{
 					From: int(rule.Port.ValueInt32()),
 					To:   int(rule.Port.ValueInt32()),
 				}
@@ -169,12 +169,12 @@ func (r *Resource) Update(ctx context.Context, req resource.UpdateRequest, resp 
 			out.AllowedRoleID = rule.AllowedRoleID.ValueString()
 
 			if lo.IsNotNil(rule.PortRange) {
-				out.PortRange = definednet.PortRange{
+				out.PortRange = &definednet.PortRange{
 					From: int(rule.PortRange.From.ValueInt32()),
 					To:   int(rule.PortRange.To.ValueInt32()),
 				}
-			} else {
-				out.PortRange = definednet.PortRange{
+			} else if !rule.Port.IsNull() {
+				out.PortRange = &definednet.PortRange{
 					From: int(rule.Port.ValueInt32()),
 					To:   int(rule.Port.ValueInt32()),
 				}
