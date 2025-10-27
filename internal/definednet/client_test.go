@@ -12,27 +12,27 @@ import (
 
 var _ = Describe("API client's invariants", func() {
 	Specify("client requires a valid endpoint URL", func() {
-		Expect(definednet.NewClient("http://localhost:8000/api/v1", "supersecret")).Error().
+		Expect(definednet.NewClient("http://localhost:8000/api/v1", "supersecret", "test")).Error().
 			NotTo(HaveOccurred(), "assert sanity")
 
-		Expect(definednet.NewClient("", "supersecret")).Error().
+		Expect(definednet.NewClient("", "supersecret", "test")).Error().
 			To(MatchError("endpoint URL must be set"), "missing endpoint URL")
 
-		Expect(definednet.NewClient("  ", "supersecret")).Error().
+		Expect(definednet.NewClient("  ", "supersecret", "test")).Error().
 			To(MatchError("endpoint URL must be set"), "empty endpoint URL")
 
-		Expect(definednet.NewClient("invalid.url", "supersecret")).Error().
+		Expect(definednet.NewClient("invalid.url", "supersecret", "test")).Error().
 			To(MatchError(`parse "invalid.url": invalid URI for request`), "invalid endpoint URL")
 	})
 
 	Specify("client requires a non-zero authorization token", func() {
-		Expect(definednet.NewClient("http://localhost:8000/api/v1", "supersecret")).Error().
+		Expect(definednet.NewClient("http://localhost:8000/api/v1", "supersecret", "test")).Error().
 			NotTo(HaveOccurred(), "assert sanity")
 
-		Expect(definednet.NewClient("http://localhost:8000/api/v1", "")).Error().
+		Expect(definednet.NewClient("http://localhost:8000/api/v1", "", "test")).Error().
 			To(MatchError("authorization token must be set"), "missing token")
 
-		Expect(definednet.NewClient("http://localhost:8000/api/v1", "  ")).Error().
+		Expect(definednet.NewClient("http://localhost:8000/api/v1", "  ", "test")).Error().
 			To(MatchError("authorization token must be set"), "empty token")
 	})
 })
@@ -48,7 +48,7 @@ var _ = Describe("executing API requests", func() {
 					HaveField("Header", MatchKeys(IgnoreExtras, Keys{
 						"Accept":        HaveExactElements("application/json"),
 						"Authorization": HaveExactElements("Bearer supersecret"),
-						"User-Agent":    HaveExactElements("Terraform-smaily-definednet/0.1.0"),
+						"User-Agent":    HaveExactElements("Terraform-smaily-definednet/test"),
 					})),
 				))
 		})

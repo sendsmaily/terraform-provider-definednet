@@ -15,7 +15,7 @@ import (
 )
 
 // NewClient creates a Defined.net HTTP API client.
-func NewClient(endpoint, token string) (Client, error) {
+func NewClient(endpoint, token string, version string) (Client, error) {
 	if lo.IsEmpty(strings.TrimSpace(endpoint)) {
 		return nil, errors.New("endpoint URL must be set")
 	}
@@ -32,6 +32,7 @@ func NewClient(endpoint, token string) (Client, error) {
 	return &client{
 		endpoint: endpointURL,
 		token:    token,
+		version:  version,
 	}, nil
 }
 
@@ -48,6 +49,7 @@ type Response[D any] struct {
 type client struct {
 	endpoint *url.URL
 	token    string
+	version  string
 }
 
 func (c *client) Do(ctx context.Context, method string, path []string, reqPayload, respPayload any) error {
@@ -74,7 +76,7 @@ func (c *client) Do(ctx context.Context, method string, path []string, reqPayloa
 
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", c.token))
-	req.Header.Set("User-Agent", "Terraform-smaily-definednet/0.1.0")
+	req.Header.Set("User-Agent", fmt.Sprintf("Terraform-smaily-definednet/%s", c.version))
 	if reqPayload != nil {
 		req.Header.Set("Content-Type", "application/json")
 	}

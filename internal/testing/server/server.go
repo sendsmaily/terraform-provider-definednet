@@ -58,5 +58,5 @@ func (s *Server) Close() {
 
 // Client returns a client for the fake HTTP API server.
 func (s *Server) Client() definednet.Client {
-	return lo.Must(definednet.NewClient(s.server.URL, "supersecret"))
+	return lo.Must(definednet.NewClient(s.server.URL, "supersecret", "fake"))
 }
