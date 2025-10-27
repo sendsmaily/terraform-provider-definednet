@@ -19,7 +19,7 @@ var _ = BeforeEach(func() {
 	server = ghttp.NewServer()
 	DeferCleanup(server.Close)
 
-	client = lo.Must(definednet.NewClient(server.URL(), "supersecret"))
+	client = lo.Must(definednet.NewClient(server.URL(), "supersecret", "test"))
 })
 
 func TestSuite(t *testing.T) {

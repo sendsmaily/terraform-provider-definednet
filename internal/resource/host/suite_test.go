@@ -18,7 +18,7 @@ var _ = BeforeEach(func() {
 	DeferCleanup(server.Close)
 
 	providerFactory = provider.New(
-		func(string, string) (definednet.Client, error) {
+		func(string, string, string) (definednet.Client, error) {
 			return server.Client(), nil
 		},
 		"test",

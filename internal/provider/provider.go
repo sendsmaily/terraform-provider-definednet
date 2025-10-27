@@ -20,7 +20,7 @@ const (
 )
 
 // ClientFactory creates Defined.net clients.
-type ClientFactory func(endpointURI string, token string) (definednet.Client, error)
+type ClientFactory func(endpointURI string, token string, version string) (definednet.Client, error)
 
 // New creates a Defined.net Terraform provider.
 func New(clientFactory ClientFactory, version string) func() provider.Provider {
@@ -65,7 +65,7 @@ func (p *Provider) Configure(ctx context.Context, req provider.ConfigureRequest,
 		return
 	}
 
-	client, err := p.clientFactory(DefinednetAPIEndpoint, config.Token.ValueString())
+	client, err := p.clientFactory(DefinednetAPIEndpoint, config.Token.ValueString(), p.version)
 	if err != nil {
 		resp.Diagnostics.AddError("Invalid Configuration", err.Error())
 		return
